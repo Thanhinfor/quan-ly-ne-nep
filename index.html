@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý Nề nếp &amp; Đánh giá Rèn luyện Học sinh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sidebar-bg:#1F3A2E;
+    --sidebar-bg-2:#193024;
+    --sidebar-text:#E9E6D8;
+    --sidebar-text-muted:#9FB3A4;
+    --paper:#F7F4EC;
+    --paper-2:#FFFFFF;
+    --ink:#262420;
+    --ink-soft:#5B564C;
+    --border:#DED7C4;
+    --border-soft:#EAE4D4;
+    --accent-gold:#AE7B24;
+    --accent-gold-soft:#F1E4C6;
+    --good:#2F6F4E;
+    --good-soft:#E1EDE4;
+    --fair:#B4801F;
+    --fair-soft:#F5EBD6;
+    --neutral:#3F5E86;
+    --neutral-soft:#E4E9F1;
+    --danger:#A6402F;
+    --danger-soft:#F3E1DD;
+    --radius:6px;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Lora',Georgia,serif;font-weight:600;margin:0;color:var(--ink);}
+  #app{display:flex;min-height:100vh;}
+
+  .sidebar{width:250px;flex-shrink:0;background:var(--sidebar-bg);background-image:linear-gradient(180deg,var(--sidebar-bg) 0%,var(--sidebar-bg-2) 100%);color:var(--sidebar-text);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:30;}
+  .brand{padding:22px 20px 16px;border-bottom:1px solid rgba(233,230,216,0.14);}
+  .brand-title{font-family:'Lora',serif;font-size:17px;line-height:1.35;font-weight:700;color:#fff;}
+  .brand-sub{font-size:11.5px;color:var(--sidebar-text-muted);margin-top:6px;letter-spacing:.02em;}
+  .menu{list-style:none;margin:0;padding:10px 10px 20px;flex:1;}
+  .menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:2px 0;border-radius:5px;cursor:pointer;color:var(--sidebar-text-muted);font-size:14.5px;transition:background .15s,color .15s;user-select:none;}
+  .menu-item .num{width:20px;height:20px;flex-shrink:0;border-radius:50%;border:1px solid rgba(233,230,216,.35);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-family:'Lora',serif;}
+  .menu-item:hover{background:rgba(233,230,216,0.08);color:var(--sidebar-text);}
+  .menu-item.active{background:var(--accent-gold);color:#1F3A2E;font-weight:600;}
+  .menu-item.active .num{border-color:#1F3A2E;}
+  .sidebar-foot{padding:14px 20px;border-top:1px solid rgba(233,230,216,0.14);font-size:11px;color:var(--sidebar-text-muted);}
+
+  .main{margin-left:250px;flex:1;min-width:0;display:flex;flex-direction:column;}
+  .topbar{background:var(--paper-2);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;}
+  .topbar h1{font-size:19px;}
+  .hamburger{display:none;background:none;border:1px solid var(--border);border-radius:5px;width:36px;height:36px;cursor:pointer;color:var(--ink);font-size:18px;}
+  .content{padding:24px 28px 60px;max-width:1280px;width:100%;}
+
+  .view-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+  .view-header h2{font-size:21px;}
+  .view-header .sub{margin:4px 0 0;color:var(--ink-soft);font-size:13.5px;max-width:640px;}
+
+  .banner{background:var(--accent-gold-soft);border:1px solid var(--accent-gold);color:#5C4210;border-radius:var(--radius);padding:11px 14px;font-size:13px;margin-bottom:18px;line-height:1.5;}
+  .banner strong{color:#4A3608;}
+
+  .filter-bar{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end;}
+  .filter-item{display:flex;flex-direction:column;gap:5px;}
+  .filter-item label{font-size:12px;color:var(--ink-soft);font-weight:600;}
+  select,input[type=text],input[type=date],input[type=number],input:not([type]),textarea{font-family:inherit;font-size:13.5px;padding:7px 10px;border:1px solid var(--border);border-radius:5px;background:#fff;color:var(--ink);}
+  select{min-width:150px;}
+  textarea{width:100%;min-height:52px;resize:vertical;font-size:13px;line-height:1.4;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent-gold);outline-offset:1px;border-color:var(--accent-gold);}
+
+  .cards-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;}
+  .stat-card{background:var(--paper-2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;flex:1;min-width:150px;}
+  .stat-card .label{font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .stat-card .value{font-family:'Lora',serif;font-size:28px;margin-top:6px;color:var(--ink);}
+  .stat-card .value.small{font-size:19px;}
+  .stat-card .foot{font-size:11.5px;color:var(--ink-soft);margin-top:4px;}
+
+  .grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:20px;}
+  .card{background:var(--paper-2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+  .card h3{font-size:15px;margin-bottom:12px;}
+
+  .legend{display:flex;flex-direction:column;gap:8px;justify-content:center;}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:13px;}
+  .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .chart-flex{display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--paper-2);}
+  table.data-table{width:100%;border-collapse:collapse;font-size:13.3px;min-width:600px;}
+  table.data-table th{text-align:left;background:#EFEADA;color:var(--ink);font-weight:600;padding:9px 10px;border-bottom:1px solid var(--border);white-space:nowrap;font-size:12.3px;}
+  table.data-table td{padding:8px 10px;border-bottom:1px solid var(--border-soft);vertical-align:middle;}
+  table.data-table tr:last-child td{border-bottom:none;}
+  table.data-table tr:hover td{background:#FBF9F2;}
+  .td-name{font-weight:600;min-width:130px;}
+  .td-check{text-align:center;}
+  .small-text{font-size:12px;color:var(--ink-soft);max-width:230px;}
+  .score-cell{font-family:'Lora',serif;font-weight:700;font-size:15px;}
+  .empty{text-align:center;color:var(--ink-soft);padding:26px !important;}
+  .input-note{width:150px;}
+  .comment-box{min-width:220px;min-height:44px;}
+
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;cursor:default;}
+  .badge-tot{background:var(--good-soft);color:var(--good);}
+  .badge-kha{background:var(--fair-soft);color:var(--fair);}
+  .badge-dat{background:var(--neutral-soft);color:var(--neutral);}
+  .badge-chuadat{background:var(--danger-soft);color:var(--danger);}
+  .badge-none{background:#eee;color:#777;}
+  .chip{display:inline-block;background:#EFEADA;border:1px solid var(--border);border-radius:5px;padding:3px 8px;font-size:11.5px;margin:2px 3px 2px 0;}
+
+  .btn{font-family:inherit;font-size:13.5px;font-weight:600;padding:8px 15px;border-radius:5px;border:1px solid transparent;cursor:pointer;transition:filter .15s,background .15s;}
+  .btn-primary{background:var(--accent-gold);color:#fff;}
+  .btn-primary:hover{filter:brightness(1.06);}
+  .btn-ghost{background:transparent;border-color:var(--border);color:var(--ink);}
+  .btn-ghost:hover{background:#EFEADA;}
+  .btn-danger{background:transparent;border-color:var(--danger);color:var(--danger);}
+  .btn-danger:hover{background:var(--danger-soft);}
+  .btn-sm{padding:4px 9px;font-size:12px;}
+  .actions-bar{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+  .row-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(31,58,46,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
+  .modal-overlay.hidden{display:none;}
+  .modal-box{background:#fff;border-radius:8px;padding:24px;width:100%;max-width:440px;max-height:88vh;overflow-y:auto;box-shadow:0 12px 32px rgba(0,0,0,.18);}
+  .modal-box h3{margin-bottom:14px;font-size:17px;}
+  .modal-box label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin:10px 0 5px;}
+  .modal-box input,.modal-box select,.modal-box textarea{width:100%;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
+  .check-line{display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:400 !important;color:var(--ink) !important;margin:6px 0 !important;padding:0 !important;}
+  .check-line input{width:auto !important;margin-top:2px;}
+  .check-group-title{font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:14px 0 4px;text-transform:none;border-bottom:1px solid var(--border-soft);padding-bottom:4px;}
+
+  #toast{position:fixed;bottom:22px;right:22px;background:#1F3A2E;color:#fff;padding:11px 18px;border-radius:6px;font-size:13.5px;box-shadow:0 6px 18px rgba(0,0,0,.2);z-index:200;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;}
+  #toast.show{opacity:1;transform:translateY(0);}
+
+  .chart-val{font-size:10px;fill:var(--ink-soft);font-family:'Inter',sans-serif;}
+  .chart-label{font-size:10.5px;fill:var(--ink-soft);font-family:'Inter',sans-serif;}
+  .donut-center{font-family:'Lora',serif;font-size:22px;fill:var(--ink);font-weight:700;}
+
+  .two-col{display:grid;grid-template-columns:260px 1fr;gap:18px;}
+  .student-list{border:1px solid var(--border);border-radius:var(--radius);background:var(--paper-2);max-height:560px;overflow-y:auto;}
+  .student-list-item{padding:10px 14px;border-bottom:1px solid var(--border-soft);cursor:pointer;font-size:13.5px;}
+  .student-list-item:hover{background:#F5F2E7;}
+  .student-list-item.active{background:var(--accent-gold-soft);font-weight:600;}
+  .search-box{margin-bottom:10px;}
+  .search-box input{width:100%;}
+  .count-pill{display:inline-block;min-width:18px;text-align:center;background:var(--danger);color:#fff;border-radius:20px;font-size:11px;padding:1px 6px;margin-left:4px;}
+  .count-pill.zero{background:#C9C2AC;}
+  .count-pill.cong{background:var(--good);}
+
+  @media print{
+    .sidebar,.topbar,.filter-bar,.actions-bar,.hamburger,#toast{display:none !important;}
+    .main{margin-left:0 !important;}
+    .content{padding:0 !important;}
+    body{background:#fff;}
+    .view{display:none !important;}
+    .view.view-active{display:block !important;}
+  }
+  @media (max-width:900px){.grid-2{grid-template-columns:1fr;}.two-col{grid-template-columns:1fr;}}
+  @media (max-width:760px){
+    .sidebar{transform:translateX(-100%);transition:transform .2s;}
+    body.sidebar-open .sidebar{transform:translateX(0);box-shadow:8px 0 24px rgba(0,0,0,.25);}
+    .main{margin-left:0;}
+    .hamburger{display:block;}
+    .content{padding:18px 14px 50px;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-title">Sổ Nề nếp &amp; Rèn luyện</div>
+      <div class="brand-sub">Phần mềm quản lý nề nếp &amp; đánh giá rèn luyện học sinh</div>
+    </div>
+    <ul class="menu" id="menu"></ul>
+    <div class="sidebar-foot">Bản thử nghiệm (prototype) · Dữ liệu lưu tại trình duyệt này</div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="hamburger" onclick="document.body.classList.toggle('sidebar-open')">☰</button>
+        <h1 id="page-title">Dashboard</h1>
+      </div>
+      <div style="font-size:12.5px;color:var(--ink-soft);" id="topbar-date"></div>
+    </div>
+    <div class="content"><div id="view-root" class="view view-active"></div></div>
+  </div>
+</div>
+<div class="modal-overlay hidden" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box" id="modal-box"></div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ========================= HẰNG SỐ ========================= */
+const DB_KEY = 'qlnn_hocsinh_v2';
+
+const MENU_ITEMS = [
+  {id:'dashboard', label:'Dashboard'},
+  {id:'classes', label:'Danh sách lớp'},
+  {id:'students', label:'Danh sách học sinh'},
+  {id:'daily', label:'Theo dõi nề nếp hằng ngày'},
+  {id:'weekly', label:'Đánh giá tuần'},
+  {id:'monthly', label:'Đánh giá tháng'},
+  {id:'violations', label:'Vi phạm'},
+  {id:'stats', label:'Thống kê'},
+  {id:'comments', label:'Nhận xét học sinh'},
+  {id:'settings', label:'Cài đặt tiêu chí đánh giá'},
+];
+const TITLES = Object.fromEntries(MENU_ITEMS.map(m=>[m.id,m.label]));
+
+/* id đi trễ / nghỉ không phép được ghi nhận qua ô "Điểm danh", không lặp lại trong danh sách "vi phạm khác" */
+const ATTENDANCE_CRIT_IDS = ['ditre','vangkhongphep'];
+
+const CRIT_DEFS = [
+  {id:'ditre', ten:'Đi học trễ, vào lớp muộn sau hiệu lệnh', loai:'tru', diem:3, trongso:1, ghiChu:'Ghi nhận qua mục Điểm danh'},
+  {id:'vangkhongphep', ten:'Nghỉ học không phép', loai:'tru', diem:10, trongso:1, ghiChu:'Ghi nhận qua mục Điểm danh'},
+  {id:'dongphuc', ten:'Không đúng đồng phục, thiếu phù hiệu, mang dép lê', loai:'tru', diem:5, trongso:1, ghiChu:''},
+  {id:'daumtoc', ten:'Đầu tóc, diện mạo không đúng quy định', loai:'tru', diem:5, trongso:1, ghiChu:''},
+  {id:'khongthuocbai', ten:'Không thuộc bài, không làm bài tập, không mang dụng cụ học tập', loai:'tru', diem:5, trongso:1, ghiChu:''},
+  {id:'noichuyerieng', ten:'Nói chuyện riêng, làm việc riêng, ngủ trong giờ học', loai:'tru', diem:5, trongso:1, ghiChu:''},
+  {id:'dienthoai', ten:'Sử dụng điện thoại trong giờ học khi chưa được phép', loai:'tru', diem:10, trongso:1, ghiChu:''},
+  {id:'chaocof', ten:'Không nghiêm túc khi chào cờ, sinh hoạt tập thể', loai:'tru', diem:5, trongso:1, ghiChu:''},
+  {id:'tructat', ten:'Không hoàn thành trực nhật, xả rác, làm mất vệ sinh', loai:'tru', diem:5, trongso:1, ghiChu:''},
+  {id:'noitucchuithe', ten:'Nói tục, chửi thề, vô lễ với thầy cô và người lớn', loai:'tru', diem:15, trongso:1, ghiChu:''},
+  {id:'gianlan', ten:'Gian lận trong kiểm tra, đánh giá', loai:'tru', diem:30, trongso:1, ghiChu:''},
+  {id:'gaygo', ten:'Gây gổ, đánh nhau, bắt nạt, bạo lực học đường (kể cả trên mạng)', loai:'tru', diem:30, trongso:1, ghiChu:''},
+  {id:'hutthuoc', ten:'Hút thuốc lá, thuốc lá điện tử, sử dụng chất kích thích', loai:'tru', diem:30, trongso:1, ghiChu:''},
+  {id:'atgt', ten:'Vi phạm quy định về an toàn giao thông', loai:'tru', diem:10, trongso:1, ghiChu:''},
+  {id:'huhongtaisan', ten:'Làm hư hỏng tài sản của lớp, của trường', loai:'tru', diem:10, trongso:1, ghiChu:''},
+  {id:'phatbieutot', ten:'Phát biểu xây dựng bài tốt, đạt điểm cao trong kiểm tra', loai:'cong', diem:5, trongso:1, ghiChu:''},
+  {id:'giupbantiendo', ten:'Giúp bạn tiến bộ, tham gia đôi bạn cùng tiến hiệu quả', loai:'cong', diem:5, trongso:1, ghiChu:''},
+  {id:'nhatduocroicua', ten:'Nhặt được của rơi trả lại người mất', loai:'cong', diem:10, trongso:1, ghiChu:''},
+  {id:'thamgiahoatdong', ten:'Tích cực tham gia hoạt động của lớp, của trường', loai:'cong', diem:10, trongso:1, ghiChu:''},
+  {id:'thanhtichhoithi', ten:'Đạt thành tích trong các hội thi, phong trào', loai:'cong', diem:15, trongso:1, ghiChu:''},
+];
+const THRESHOLD_DEFS = [
+  {id:'th1', xepLoai:'Tốt', tu:'90', den:'', ghiChu:'Được biểu dương trước lớp'},
+  {id:'th2', xepLoai:'Khá', tu:'75', den:'89', ghiChu:''},
+  {id:'th3', xepLoai:'Đạt', tu:'50', den:'74', ghiChu:'Nhắc nhở, theo dõi tiến bộ'},
+  {id:'th4', xepLoai:'Chưa đạt', tu:'', den:'49', ghiChu:'Mời cha mẹ học sinh phối hợp giáo dục'},
+];
+const BADGE_CLASS = {'Tốt':'badge-tot','Khá':'badge-kha','Đạt':'badge-dat','Chưa đạt':'badge-chuadat'};
+const CHART_COLOR = {'Tốt':'var(--good)','Khá':'var(--fair)','Đạt':'var(--neutral)','Chưa đạt':'var(--danger)'};
+
+/* ========================= TIỆN ÍCH NGÀY THÁNG ========================= */
+function pad(n){return n<10?'0'+n:''+n;}
+function toISO(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function fromISO(s){const p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);}
+function formatVN(s){const d=fromISO(s);return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear();}
+function getMonday(d){const date=new Date(d);const day=date.getDay();const diff=(day===0?-6:1-day);date.setDate(date.getDate()+diff);date.setHours(0,0,0,0);return date;}
+function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function weekRangeLabel(weekKey){const mon=fromISO(weekKey);const sat=addDays(mon,5);return formatVN(toISO(mon))+' – '+formatVN(toISO(sat));}
+function monthLabel(monthKey){const parts=monthKey.split('-');return 'Tháng '+Number(parts[1])+'/'+parts[0];}
+function uid(prefix){return prefix+'_'+Math.random().toString(36).slice(2,9);}
+function escapeHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ========================= KHỞI TẠO / LƯU DỮ LIỆU ========================= */
+let db;
+function seedDB(){
+  const classId = 'c_11a3';
+  // Danh sách học sinh thật lớp 11A3 (từ file đính kèm)
+  const raw = [
+    ['7988689209','Nguyễn Danh An','25/07/2010','Nam','0354442055'],
+    ['6888689210','Nguyễn Cao Kỳ Anh','14/09/2010','Nữ','0386112052'],
+    ['7988689213','Trần Tuấn Anh','04/02/2010','Nam','0965772495'],
+    ['7988689214','Nguyễn Gia Bảo','01/07/2010','Nam','0974968539'],
+    ['7988689215','Lê Thị Phúc Diệu','31/07/2010','Nữ','0386410385'],
+    ['7754565697','Nguyễn Hoàng Bảo Dương','18/04/2009','Nam','0372276772'],
+    ['7988689216','Trần Nhật Đan','27/10/2010','Nam','0388629806'],
+    ['7988689217','Nguyễn Quốc Đạt','11/07/2009','Nam','0569596678'],
+    ['7988689218','Trần Minh Đăng','03/11/2009','Nam','0365159189'],
+    ['7988689219','Hoàng Thái Mỹ Hạnh','01/02/2010','Nữ','0362246453'],
+    ['7988689220','Lê Ngọc Bảo Hân','17/09/2010','Nữ','0968461473'],
+    ['7588689221','Nguyễn Minh Hoàng','23/05/2010','Nam','0365439251'],
+    ['7988689222','Nguyễn Thái Hoàng','15/07/2010','Nam','0982686576'],
+    ['7988689223','Nguyễn Gia Huy','07/08/2010','Nam','0332552602'],
+    ['7988689224','Phạm Khánh Huy','16/04/2010','Nam','0368344135'],
+    ['7988689225','Nguyễn Thị Quỳnh Hương','18/09/2010','Nữ','0367533638'],
+    ['7988689226','Cao Tuấn Khải','22/08/2010','Nam','0984211751'],
+    ['7988689311','Ngô Trung Kiên','11/02/2010','Nam','0362882524'],
+    ['7988689227','Hà Vũ Viết Lãm','08/02/2010','Nam','0357784501'],
+    ['7988689228','Trần Hoàng Phi Long','21/09/2009','Nam','0983987884'],
+    ['7988689182','Nguyễn Thị Kiều Ly','12/04/2010','Nữ','0392470520'],
+    ['7781670083','Hàn Đa Minh','06/10/2010','Nam','0379412352'],
+    ['7988689229','Nguyễn Thị Minh','19/02/2010','Nữ','0355533879'],
+    ['7988689230','Phạm Tiến Minh','09/07/2010','Nam','0343773647'],
+    ['7988689231','Đỗ Hoài My','11/09/2010','Nữ','0962877864'],
+    ['7988689233','Đặng Nguyễn Bảo Ngọc','26/10/2010','Nữ','0983089115'],
+    ['7988689234','Phạm Thị Hạnh Nguyên','04/09/2010','Nữ','0972526400'],
+    ['7988689235','Nguyễn Minh Nhật','09/02/2010','Nam','0359047387'],
+    ['7988689236','Võ Hoàng Nhật','13/01/2010','Nam','0385434791'],
+    ['7988689237','Nguyễn Hoàng Phi','09/03/2010','Nam','0975480580'],
+    ['7988689238','Lê Hoàng Đình Phong','29/05/2010','Nam','0335316858'],
+    ['7988689239','Bùi Hoàng Phúc','19/05/2010','Nam','0937368672'],
+    ['7988689240','Nguyễn Thanh Quân','21/04/2009','Nam','0938128308'],
+    ['7588689241','Nguyễn Minh Quốc','20/07/2010','Nam','0366965220'],
+    ['7988689243','Võ Thụy Dạ Thảo','19/10/2010','Nữ','0933998278'],
+    ['7988689244','Trần Gia Hưng Thịnh','01/08/2010','Nam','0972802294'],
+    ['7588689245','Trần Thị Minh Thư','04/03/2010','Nữ','0978364885'],
+    ['7988689246','Hồ Quỳnh Trâm','16/04/2010','Nữ','0328466282'],
+    ['7988689247','Nguyễn Hồng Bảo Trâm','14/12/2010','Nữ','0363982005'],
+    ['7755105579','Nguyễn Quốc Trung','04/10/2008','Nam','0385497020'],
+    ['7988689248','Trần Quốc Tuấn','18/10/2009','Nam','0974814813'],
+    ['7988689203','Đào Thị Mỹ Uyên','15/05/2010','Nữ','0969205372'],
+    ['7988689249','Phạm Ngọc Phương Vy','01/03/2010','Nữ','0962050923'],
+    ['7988689250','Trần Vy Vy','22/02/2010','Nữ','0328907822'],
+    ['7988689251','Đặng Thị Ngọc Xuân','18/02/2010','Nữ','0982741077'],
+  ];
+  const students = raw.map((r,i)=>({id:'hs_'+(i+1), classId, maHS:r[0], hoTen:r[1], ngaySinh:r[2], gioiTinh:r[3], sdt:r[4]}));
+  return {
+    classes:[{id:classId, ten:'11A3', gvcn:''}],
+    students,
+    criteria: CRIT_DEFS.map(c=>({...c})),
+    thresholds: THRESHOLD_DEFS.map(t=>({...t})),
+    settings:{ diemKhoiDiem:100, quyTacDacBiet:'', driveClientId:'' },
+    dailyRecords: [],   // chưa có dữ liệu mẫu — đây là học sinh thật, thầy/cô tự nhập qua "Theo dõi nề nếp hằng ngày"
+    nhanXetTuan:[],
+    nhanXetThang:[],
+  };
+}
+function loadDB(){
+  try{ const raw = localStorage.getItem(DB_KEY); if(!raw) return null; return JSON.parse(raw); }catch(e){ return null; }
+}
+function saveDB(){ try{ localStorage.setItem(DB_KEY, JSON.stringify(db)); }catch(e){ console.error(e); } }
+
+/* ========================= TRẠNG THÁI GIAO DIỆN ========================= */
+let currentView = 'dashboard';
+const today = new Date();
+const state = {
+  dailyClassId:null, dailyDate: toISO(today),
+  weeklyClassId:null, weeklyWeek: toISO(getMonday(today)),
+  monthlyClassId:null, monthlyMonth: today.getFullYear()+'-'+pad(today.getMonth()+1),
+  violClassId:null, violFrom: toISO(addDays(today,-6)), violTo: toISO(today), violType:'all', violStudent:'all',
+  statsClassId:null, statsWeek: toISO(getMonday(today)), statsMode:'__class__',
+  studentsClassFilter:'all', studentsSearch:'',
+  commentsSearch:'', commentsStudentId:null,
+};
+
+/* ========================= LẤY / GHI BẢN GHI NGÀY ========================= */
+function getDailyRecord(studentId, ngay){
+  return db.dailyRecords.find(r=>r.studentId===studentId && r.ngay===ngay) || {diemDanh:'comat', viPhamIds:[], khenThuongIds:[], ghiChu:''};
+}
+function upsertDailyPartial(studentId, ngay, classId, patch){
+  let rec = db.dailyRecords.find(r=>r.studentId===studentId && r.ngay===ngay);
+  if(!rec){ rec = {id:uid('rec'), studentId, classId, ngay, diemDanh:'comat', viPhamIds:[], khenThuongIds:[], ghiChu:''}; db.dailyRecords.push(rec); }
+  Object.assign(rec, patch);
+  saveDB();
+}
+
+/* ========================= TÍNH TOÁN ĐIỂM ========================= */
+function tallyRange(studentId, fromD, toD){
+  const recs = db.dailyRecords.filter(r=>r.studentId===studentId && r.ngay>=fromD && r.ngay<=toD);
+  const counts = {};
+  function inc(id){ counts[id]=(counts[id]||0)+1; }
+  recs.forEach(r=>{
+    if(r.diemDanh==='khongphep') inc('vangkhongphep');
+    if(r.diemDanh==='tre') inc('ditre');
+    (r.viPhamIds||[]).forEach(id=>inc(id));
+    (r.khenThuongIds||[]).forEach(id=>inc(id));
+  });
+  return {recs, counts};
+}
+function scoreFromCounts(counts){
+  let cong=0, tru=0; const chiTiet=[];
+  Object.keys(counts).forEach(id=>{
+    const c = db.criteria.find(x=>x.id===id);
+    if(!c) return;
+    const val = Number(c.diem)*Number(c.trongso)*counts[id];
+    if(c.loai==='cong') cong+=val; else tru+=val;
+    chiTiet.push({ten:c.ten, loai:c.loai, soLan:counts[id], diem:val});
+  });
+  return {cong, tru, chiTiet};
+}
+function classify(diem){
+  for(const t of db.thresholds){
+    const tu = (t.tu===''||t.tu==null) ? -Infinity : Number(t.tu);
+    const den = (t.den===''||t.den==null) ? Infinity : Number(t.den);
+    if(diem>=tu && diem<=den) return t.xepLoai;
+  }
+  return 'Chưa xếp loại';
+}
+/* Vi phạm/điểm cộng-trừ CHỈ TRONG TUẦN (Mon-Sat) — dùng cho cột "trong tuần" */
+function computeWeeklyRaw(studentId, weekKey){
+  const monday = fromISO(weekKey);
+  const days = [0,1,2,3,4,5].map(i=>toISO(addDays(monday,i)));
+  const {recs, counts} = tallyRange(studentId, days[0], days[5]);
+  const {cong, tru, chiTiet} = scoreFromCounts(counts);
+  const tongViPham = chiTiet.filter(x=>x.loai==='tru').reduce((s,x)=>s+x.soLan,0);
+  return {cong, tru, chiTiet, tongViPham, soNgayGhiNhan: recs.length};
+}
+/* Điểm LŨY KẾ trong tháng, tính từ đầu tháng đến hết tuần đã chọn (mô hình 100 điểm/tháng) */
+function computeCumulativeAtWeek(studentId, weekKey){
+  const monday = fromISO(weekKey);
+  const saturday = addDays(monday,5);
+  const monthFirst = new Date(saturday.getFullYear(), saturday.getMonth(), 1);
+  const fromD = toISO(monthFirst), toD = toISO(saturday);
+  const {recs, counts} = tallyRange(studentId, fromD, toD);
+  const {cong, tru, chiTiet} = scoreFromCounts(counts);
+  const base = Number(db.settings.diemKhoiDiem)||0;
+  const diem = Math.round((base+cong-tru)*10)/10;
+  return {diem, cong, tru, base, xepLoai: classify(diem), chiTiet, soNgayGhiNhan: recs.length,
+    monthKey: saturday.getFullYear()+'-'+pad(saturday.getMonth()+1)};
+}
+function getWeekKeysOfMonth(monthKey){
+  const parts = monthKey.split('-').map(Number);
+  const first = new Date(parts[0], parts[1]-1, 1);
+  const last = new Date(parts[0], parts[1], 0);
+  let cur = getMonday(first);
+  const keys=[]; let guard=0;
+  while(cur<=last && guard<10){ const sat=addDays(cur,5); if(sat>=first) keys.push(toISO(cur)); cur=addDays(cur,7); guard++; }
+  return keys;
+}
+/* Điểm cuối tháng = 100 (hoặc điểm khởi điểm) + tổng cộng - tổng trừ CẢ THÁNG */
+function computeMonthlyScore(studentId, monthKey){
+  const parts = monthKey.split('-').map(Number);
+  const first = new Date(parts[0], parts[1]-1, 1);
+  const last = new Date(parts[0], parts[1], 0);
+  const fromD = toISO(first), toD = toISO(last);
+  const {recs, counts} = tallyRange(studentId, fromD, toD);
+  const {cong, tru, chiTiet} = scoreFromCounts(counts);
+  const base = Number(db.settings.diemKhoiDiem)||0;
+  const diem = recs.length ? Math.round((base+cong-tru)*10)/10 : null;
+  const tongViPham = chiTiet.filter(x=>x.loai==='tru').reduce((s,x)=>s+x.soLan,0);
+  const weekKeys = getWeekKeysOfMonth(monthKey);
+  const weekly = weekKeys.map(wk=>({wk, ...computeCumulativeAtWeek(studentId, wk)}));
+  const withData = weekly.filter(w=>w.soNgayGhiNhan>0);
+  let trend = 'Chưa đủ dữ liệu';
+  if(withData.length>=2){
+    const firstNet = computeWeeklyRaw(studentId, withData[0].wk);
+    const lastNet = computeWeeklyRaw(studentId, withData[withData.length-1].wk);
+    const a = firstNet.cong-firstNet.tru, b = lastNet.cong-lastNet.tru;
+    if(b-a>2) trend='Tiến bộ'; else if(a-b>2) trend='Giảm sút'; else trend='Ổn định';
+  }
+  return {diem, cong, tru, chiTiet, tongViPham, xepLoai: diem!=null? classify(diem):'Chưa xếp loại', weekly, withData, trend, soNgayGhiNhan: recs.length};
+}
+function getAllWeekKeys(classId){
+  const set = new Set();
+  db.dailyRecords.filter(r=>!classId||r.classId===classId).forEach(r=>{ set.add(toISO(getMonday(fromISO(r.ngay)))); });
+  set.add(toISO(getMonday(new Date())));
+  return Array.from(set).sort().reverse();
+}
+function getAllMonthKeys(classId){
+  const set = new Set();
+  db.dailyRecords.filter(r=>!classId||r.classId===classId).forEach(r=> set.add(r.ngay.slice(0,7)));
+  const now = new Date(); set.add(now.getFullYear()+'-'+pad(now.getMonth()+1));
+  return Array.from(set).sort().reverse();
+}
+function suggestWeeklyComment(studentId, weekKey){
+  const raw = computeWeeklyRaw(studentId, weekKey);
+  if(raw.soNgayGhiNhan===0) return '';
+  const cum = computeCumulativeAtWeek(studentId, weekKey);
+  const viList = raw.chiTiet.filter(x=>x.loai==='tru');
+  const congList = raw.chiTiet.filter(x=>x.loai==='cong');
+  let s='';
+  if(viList.length===0) s+='Trong tuần, học sinh thực hiện tốt nội quy, không vi phạm nề nếp. ';
+  else s+='Trong tuần, học sinh vi phạm: '+viList.map(v=>v.ten.toLowerCase()+' ('+v.soLan+' lần)').join(', ')+'. ';
+  if(congList.length) s+='Có việc làm tốt: '+congList.map(v=>v.ten.toLowerCase()+' ('+v.soLan+' lần)').join(', ')+'. ';
+  s+='Điểm nề nếp lũy kế trong tháng đến nay: '+cum.diem+' ('+cum.xepLoai+').';
+  return s;
+}
+function suggestMonthlyComment(studentId, monthKey){
+  const m = computeMonthlyScore(studentId, monthKey);
+  if(!m.recs && m.soNgayGhiNhan===0) return '';
+  if(m.diem==null) return '';
+  let s = 'Điểm nề nếp cuối tháng: '+m.diem+' ('+m.xepLoai+'). Tổng số lần vi phạm trong tháng: '+m.tongViPham+'. ';
+  if(m.trend==='Tiến bộ') s+='Học sinh có sự tiến bộ trong nửa cuối tháng so với đầu tháng, cần tiếp tục phát huy.';
+  else if(m.trend==='Giảm sút') s+='Mức độ vi phạm có xu hướng tăng về cuối tháng, cần trao đổi và nhắc nhở kịp thời.';
+  else if(m.trend==='Ổn định') s+='Kết quả rèn luyện tương đối ổn định qua các tuần trong tháng.';
+  return s;
+}
+
+/* ========================= BIỂU ĐỒ SVG ========================= */
+function donutSVG(data, size){
+  size = size||168;
+  const total = data.reduce((s,d)=>s+d.value,0);
+  const r=size/2, cx=r, cy=r, strokeW=size*0.26, radius=r-strokeW/2;
+  if(!total){
+    return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
+      <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="#E5E0D0" stroke-width="${strokeW}"/>
+      <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" class="chart-label">Chưa có dữ liệu</text>
+    </svg>`;
+  }
+  const circumference = 2*Math.PI*radius;
+  let cumulative=0, segs='';
+  data.forEach(d=>{
+    if(!d.value) return;
+    const frac = d.value/total;
+    const dash = frac*circumference;
+    const rotate = (cumulative/total)*360 - 90;
+    segs += `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${d.color}" stroke-width="${strokeW}" stroke-dasharray="${dash} ${circumference-dash}" transform="rotate(${rotate} ${cx} ${cy})"/>`;
+    cumulative += d.value;
+  });
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">${segs}
+    <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" class="donut-center">${total}</text></svg>`;
+}
+function barSVG(labels, values, opts){
+  opts = opts||{};
+  const w = opts.width || Math.max(340, labels.length*64);
+  const h = opts.height || 220, pad2 = 34;
+  const max = Math.max.apply(null, values.concat([1]));
+  const gap = (w-pad2*2)/Math.max(labels.length,1);
+  const barW = Math.min(gap*0.55, 40);
+  let bars='';
+  values.forEach((v,i)=>{
+    const bh = max>0 ? (Math.max(v,0)/max)*(h-pad2*2) : 0;
+    const x = pad2 + i*gap + (gap-barW)/2;
+    const y = h-pad2-bh;
+    const color = opts.colors ? opts.colors[i] : 'var(--accent-gold)';
+    bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${bh.toFixed(1)}" fill="${color}" rx="3"></rect>
+    <text x="${(x+barW/2).toFixed(1)}" y="${(y-6).toFixed(1)}" text-anchor="middle" class="chart-val">${v}</text>
+    <text x="${(x+barW/2).toFixed(1)}" y="${h-pad2+16}" text-anchor="middle" class="chart-label">${escapeHtml(labels[i])}</text>`;
+  });
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px">
+    <line x1="${pad2}" y1="${h-pad2}" x2="${w-pad2}" y2="${h-pad2}" stroke="var(--border)"/>${bars}</svg>`;
+}
+function lineSVG(labels, values, opts){
+  opts = opts||{};
+  const w = opts.width||520, h = opts.height||200, pad2=32;
+  if(values.length===0) return `<div class="small-text">Chưa đủ dữ liệu để vẽ biểu đồ xu hướng.</div>`;
+  const max = Math.max.apply(null, values), min = Math.min.apply(null, values.concat([0]));
+  const range = (max-min)||1;
+  const stepX = values.length>1 ? (w-pad2*2)/(values.length-1) : 0;
+  const pts = values.map((v,i)=>{ const x=pad2+i*stepX; const y=h-pad2-((v-min)/range)*(h-pad2*2); return [x,y]; });
+  const path = pts.map((p,i)=> (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const dots = pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4" fill="var(--accent-gold)"/>
+    <text x="${p[0].toFixed(1)}" y="${h-10}" text-anchor="middle" class="chart-label">${escapeHtml(labels[i])}</text>
+    <text x="${p[0].toFixed(1)}" y="${(p[1]-10).toFixed(1)}" text-anchor="middle" class="chart-val">${values[i]}</text>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px">
+    <line x1="${pad2}" y1="${h-pad2}" x2="${w-pad2}" y2="${h-pad2}" stroke="var(--border)"/>
+    <path d="${path}" fill="none" stroke="var(--accent-gold)" stroke-width="2.5"/>${dots}</svg>`;
+}
+function badge(xepLoai){
+  const t = db.thresholds.find(x=>x.xepLoai===xepLoai);
+  const title = t&&t.ghiChu? ` title="${escapeHtml(t.ghiChu)}"` : '';
+  return `<span class="badge ${BADGE_CLASS[xepLoai]||'badge-none'}"${title}>${escapeHtml(xepLoai)}</span>`;
+}
+function trendBadge(trend){
+  const map = {'Tiến bộ':'badge-tot','Giảm sút':'badge-chuadat','Ổn định':'badge-dat','Chưa đủ dữ liệu':'badge-none'};
+  return `<span class="badge ${map[trend]||'badge-none'}">${trend}</span>`;
+}
+
+/* ========================= ĐIỀU HƯỚNG & KHUNG ========================= */
+function nav(view){
+  currentView = view;
+  document.querySelectorAll('.menu-item').forEach(el=>el.classList.toggle('active', el.dataset.view===view));
+  document.getElementById('page-title').textContent = TITLES[view];
+  document.body.classList.remove('sidebar-open');
+  renderView();
+}
+function buildMenu(){
+  document.getElementById('menu').innerHTML = MENU_ITEMS.map((m,i)=>`<li class="menu-item" data-view="${m.id}" onclick="nav('${m.id}')"><span class="num">${i+1}</span><span>${m.label}</span></li>`).join('');
+}
+const RENDERERS = {
+  dashboard: renderDashboard, classes: renderClasses, students: renderStudents,
+  daily: renderDaily, weekly: renderWeekly, monthly: renderMonthly,
+  violations: renderViolations, stats: renderStats, comments: renderComments, settings: renderSettings,
+};
+function renderView(){ document.getElementById('view-root').innerHTML = RENDERERS[currentView](); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._toastTimer); window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+function openModal(html){ document.getElementById('modal-box').innerHTML = html; document.getElementById('modal-overlay').classList.remove('hidden'); }
+function closeModal(){ document.getElementById('modal-overlay').classList.add('hidden'); document.getElementById('modal-box').innerHTML=''; }
+function classOptionsHTML(selectedId, includeAll){
+  let html = includeAll ? `<option value="all">Tất cả lớp</option>` : '';
+  html += db.classes.map(c=>`<option value="${c.id}" ${c.id===selectedId?'selected':''}>${escapeHtml(c.ten)}</option>`).join('');
+  return html;
+}
+
+/* ========================= 1. DASHBOARD ========================= */
+function renderDashboard(){
+  const totalClasses = db.classes.length;
+  const totalStudents = db.students.length;
+  const curWeek = toISO(getMonday(new Date()));
+  const curMonth = today.getFullYear()+'-'+pad(today.getMonth()+1);
+
+  let weekCount = {Tốt:0,Khá:0,Đạt:0,'Chưa đạt':0}, weekScoreSum=0, weekScoreN=0;
+  db.students.forEach(s=>{
+    const r = computeCumulativeAtWeek(s.id, curWeek);
+    if(r.soNgayGhiNhan>0){ weekScoreSum+=r.diem; weekScoreN++; if(weekCount[r.xepLoai]!==undefined) weekCount[r.xepLoai]++; }
+  });
+  let monthScoreSum=0, monthScoreN=0, monthCount={Tốt:0,Khá:0,Đạt:0,'Chưa đạt':0};
+  db.students.forEach(s=>{
+    const m = computeMonthlyScore(s.id, curMonth);
+    if(m.diem!=null){ monthScoreSum+=m.diem; monthScoreN++; if(monthCount[m.xepLoai]!==undefined) monthCount[m.xepLoai]++; }
+  });
+  const donut = donutSVG([
+    {label:'Tốt', value:weekCount['Tốt'], color:'var(--good)'},{label:'Khá', value:weekCount['Khá'], color:'var(--fair)'},
+    {label:'Đạt', value:weekCount['Đạt'], color:'var(--neutral)'},{label:'Chưa đạt', value:weekCount['Chưa đạt'], color:'var(--danger)'},
+  ]);
+  const weekKeys = getAllWeekKeys(null).slice(0,6).reverse();
+  const trendVals = weekKeys.map(wk=>{ let sum=0,n=0; db.students.forEach(s=>{const r=computeCumulativeAtWeek(s.id,wk); if(r.soNgayGhiNhan>0){sum+=r.diem;n++;}}); return n? Math.round((sum/n)*10)/10 : 0; });
+  const trendLabels = weekKeys.map(wk=>formatVN(wk).slice(0,5));
+
+  return `
+  <div class="banner"><strong>Ghi chú:</strong> Cấu hình điểm cộng/trừ và ngưỡng xếp loại hiện đang áp dụng theo bảng tiêu chí thầy/cô đã cung cấp (mục 10 - Cài đặt tiêu chí đánh giá). Điểm nề nếp được tính theo mô hình <strong>100 điểm khởi điểm mỗi tháng</strong>. Thầy/cô có thể chỉnh sửa lại bất cứ lúc nào nếu quy định thay đổi.</div>
+  <div class="cards-row">
+    <div class="stat-card"><div class="label">Tổng số lớp</div><div class="value">${totalClasses}</div></div>
+    <div class="stat-card"><div class="label">Tổng số học sinh</div><div class="value">${totalStudents}</div></div>
+    <div class="stat-card"><div class="label">Điểm TB lũy kế đến tuần này</div><div class="value">${weekScoreN? Math.round((weekScoreSum/weekScoreN)*10)/10 : '—'}</div><div class="foot">${weekRangeLabel(curWeek)}</div></div>
+    <div class="stat-card"><div class="label">Điểm TB cuối tháng hiện tại</div><div class="value">${monthScoreN? Math.round((monthScoreSum/monthScoreN)*10)/10 : '—'}</div><div class="foot">${monthLabel(curMonth)}</div></div>
+  </div>
+  <div class="cards-row">
+    <div class="stat-card"><div class="label">Tốt (lũy kế đến nay)</div><div class="value small" style="color:var(--good)">${weekCount['Tốt']}</div></div>
+    <div class="stat-card"><div class="label">Khá (lũy kế đến nay)</div><div class="value small" style="color:var(--fair)">${weekCount['Khá']}</div></div>
+    <div class="stat-card"><div class="label">Đạt (lũy kế đến nay)</div><div class="value small" style="color:var(--neutral)">${weekCount['Đạt']}</div></div>
+    <div class="stat-card"><div class="label">Chưa đạt (lũy kế đến nay)</div><div class="value small" style="color:var(--danger)">${weekCount['Chưa đạt']}</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><h3>Xu hướng điểm nề nếp trung bình theo tuần (toàn trường)</h3>${lineSVG(trendLabels, trendVals)}</div>
+    <div class="card"><h3>Phân loại rèn luyện (lũy kế đến tuần hiện tại)</h3>
+      <div class="chart-flex">${donut}
+        <div class="legend">
+          <div class="legend-item"><span class="dot" style="background:var(--good)"></span>Tốt: ${weekCount['Tốt']}</div>
+          <div class="legend-item"><span class="dot" style="background:var(--fair)"></span>Khá: ${weekCount['Khá']}</div>
+          <div class="legend-item"><span class="dot" style="background:var(--neutral)"></span>Đạt: ${weekCount['Đạt']}</div>
+          <div class="legend-item"><span class="dot" style="background:var(--danger)"></span>Chưa đạt: ${weekCount['Chưa đạt']}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ========================= 2. DANH SÁCH LỚP ========================= */
+function renderClasses(){
+  const rows = db.classes.map(c=>{
+    const siSo = db.students.filter(s=>s.classId===c.id).length;
+    return `<tr><td class="td-name">${escapeHtml(c.ten)}</td><td>${escapeHtml(c.gvcn||'—')}</td><td>${siSo}</td>
+      <td><div class="row-actions"><button class="btn btn-ghost btn-sm" onclick="openClassModal('${c.id}')">Sửa</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteClass('${c.id}')">Xóa</button></div></td></tr>`;
+  }).join('');
+  return `
+  <div class="view-header"><div><h2>Danh sách lớp</h2><p class="sub">Quản lý các lớp học đang phụ trách.</p></div>
+    <button class="btn btn-primary" onclick="openClassModal()">+ Thêm lớp mới</button></div>
+  <div class="table-wrap"><table class="data-table">
+    <thead><tr><th>Tên lớp</th><th>GVCN</th><th>Sĩ số</th><th style="width:140px">Hành động</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="4" class="empty">Chưa có lớp nào</td></tr>'}</tbody>
+  </table></div>`;
+}
+function openClassModal(id){
+  const c = id ? db.classes.find(x=>x.id===id) : null;
+  openModal(`<h3>${c?'Sửa lớp':'Thêm lớp mới'}</h3>
+    <label>Tên lớp</label><input id="f_ten" value="${c?escapeHtml(c.ten):''}" placeholder="VD: 11A3">
+    <label>Giáo viên chủ nhiệm</label><input id="f_gvcn" value="${c?escapeHtml(c.gvcn||''):''}" placeholder="Họ tên GVCN">
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-primary" onclick="saveClass('${id||''}')">Lưu</button></div>`);
+}
+function saveClass(id){
+  const ten = document.getElementById('f_ten').value.trim();
+  const gvcn = document.getElementById('f_gvcn').value.trim();
+  if(!ten){ alert('Vui lòng nhập tên lớp'); return; }
+  if(id){ const c=db.classes.find(x=>x.id===id); c.ten=ten; c.gvcn=gvcn; }
+  else db.classes.push({id:uid('c'), ten, gvcn});
+  saveDB(); closeModal(); renderView(); toast('Đã lưu thông tin lớp');
+}
+function deleteClass(id){
+  if(!confirm('Xóa lớp này sẽ xóa toàn bộ học sinh và dữ liệu liên quan của lớp. Tiếp tục?')) return;
+  const studentIds = db.students.filter(s=>s.classId===id).map(s=>s.id);
+  db.students = db.students.filter(s=>s.classId!==id);
+  db.dailyRecords = db.dailyRecords.filter(r=>r.classId!==id);
+  db.nhanXetTuan = db.nhanXetTuan.filter(n=>!studentIds.includes(n.studentId));
+  db.nhanXetThang = db.nhanXetThang.filter(n=>!studentIds.includes(n.studentId));
+  db.classes = db.classes.filter(c=>c.id!==id);
+  saveDB(); renderView(); toast('Đã xóa lớp');
+}
+
+/* ========================= 3. DANH SÁCH HỌC SINH ========================= */
+function renderStudents(){
+  if(state.studentsClassFilter==='all' && db.classes.length===1) state.studentsClassFilter = db.classes[0].id;
+  let list = db.students.filter(s=> state.studentsClassFilter==='all' || s.classId===state.studentsClassFilter);
+  if(state.studentsSearch.trim()){
+    const q = state.studentsSearch.trim().toLowerCase();
+    list = list.filter(s=> s.hoTen.toLowerCase().includes(q) || s.maHS.toLowerCase().includes(q));
+  }
+  const rows = list.map(s=>{
+    const cls = db.classes.find(c=>c.id===s.classId);
+    return `<tr><td>${escapeHtml(s.maHS)}</td><td class="td-name">${escapeHtml(s.hoTen)}</td><td>${escapeHtml(s.gioiTinh)}</td>
+      <td>${escapeHtml(s.ngaySinh)}</td><td>${escapeHtml(s.sdt||'—')}</td><td>${cls?escapeHtml(cls.ten):'—'}</td>
+      <td><div class="row-actions"><button class="btn btn-ghost btn-sm" onclick="openStudentModal('${s.id}')">Sửa</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteStudent('${s.id}')">Xóa</button></div></td></tr>`;
+  }).join('');
+  return `
+  <div class="view-header"><div><h2>Danh sách học sinh</h2><p class="sub">Quản lý thông tin học sinh theo từng lớp.</p></div>
+    <button class="btn btn-primary" onclick="openStudentModal()">+ Thêm học sinh</button></div>
+  <div class="filter-bar">
+    <div class="filter-item"><label>Lớp</label><select onchange="state.studentsClassFilter=this.value;renderView()">${classOptionsHTML(state.studentsClassFilter,true)}</select></div>
+    <div class="filter-item" style="flex:1;min-width:200px;"><label>Tìm kiếm học sinh</label>
+      <input type="text" placeholder="Nhập tên hoặc mã học sinh..." value="${escapeHtml(state.studentsSearch)}" oninput="state.studentsSearch=this.value;renderView()"></div>
+  </div>
+  <div class="table-wrap"><table class="data-table">
+    <thead><tr><th>Mã HS</th><th>Họ và tên</th><th>Giới tính</th><th>Ngày sinh</th><th>SĐT liên hệ</th><th>Lớp</th><th style="width:140px">Hành động</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="7" class="empty">Không có học sinh phù hợp</td></tr>'}</tbody>
+  </table></div>`;
+}
+function openStudentModal(id){
+  const s = id ? db.students.find(x=>x.id===id) : null;
+  const opts = db.classes.map(c=>`<option value="${c.id}" ${s&&s.classId===c.id?'selected':''}>${escapeHtml(c.ten)}</option>`).join('');
+  openModal(`<h3>${s?'Sửa học sinh':'Thêm học sinh'}</h3>
+    <label>Lớp</label><select id="f_class">${opts}</select>
+    <label>Mã học sinh</label><input id="f_ma" value="${s?escapeHtml(s.maHS):''}">
+    <label>Họ và tên</label><input id="f_hoten" value="${s?escapeHtml(s.hoTen):''}">
+    <label>Giới tính</label><select id="f_gt"><option value="Nam" ${s&&s.gioiTinh==='Nam'?'selected':''}>Nam</option><option value="Nữ" ${s&&s.gioiTinh==='Nữ'?'selected':''}>Nữ</option></select>
+    <label>Ngày sinh</label><input id="f_ngaysinh" placeholder="dd/mm/yyyy" value="${s?escapeHtml(s.ngaySinh):''}">
+    <label>SĐT liên hệ</label><input id="f_sdt" value="${s?escapeHtml(s.sdt||''):''}">
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-primary" onclick="saveStudent('${id||''}')">Lưu</button></div>`);
+}
+function saveStudent(id){
+  const classId = document.getElementById('f_class').value;
+  const maHS = document.getElementById('f_ma').value.trim();
+  const hoTen = document.getElementById('f_hoten').value.trim();
+  const gioiTinh = document.getElementById('f_gt').value;
+  const ngaySinh = document.getElementById('f_ngaysinh').value.trim();
+  const sdt = document.getElementById('f_sdt').value.trim();
+  if(!hoTen){ alert('Vui lòng nhập họ tên học sinh'); return; }
+  if(id){ const s=db.students.find(x=>x.id===id); Object.assign(s,{classId,maHS,hoTen,gioiTinh,ngaySinh,sdt}); }
+  else db.students.push({id:uid('hs'), classId, maHS, hoTen, gioiTinh, ngaySinh, sdt});
+  saveDB(); closeModal(); renderView(); toast('Đã lưu học sinh');
+}
+function deleteStudent(id){
+  if(!confirm('Xóa học sinh này và toàn bộ dữ liệu liên quan?')) return;
+  db.students = db.students.filter(s=>s.id!==id);
+  db.dailyRecords = db.dailyRecords.filter(r=>r.studentId!==id);
+  db.nhanXetTuan = db.nhanXetTuan.filter(n=>n.studentId!==id);
+  db.nhanXetThang = db.nhanXetThang.filter(n=>n.studentId!==id);
+  saveDB(); renderView(); toast('Đã xóa học sinh');
+}
+
+/* ========================= 4. THEO DÕI NỀ NẾP HẰNG NGÀY ========================= */
+function renderDaily(){
+  if(!state.dailyClassId) state.dailyClassId = db.classes[0]?.id;
+  const students = db.students.filter(s=>s.classId===state.dailyClassId);
+  const rows = students.map((s,i)=>{
+    const rec = getDailyRecord(s.id, state.dailyDate);
+    const vpCount = (rec.viPhamIds||[]).length, ktCount = (rec.khenThuongIds||[]).length;
+    return `<tr>
+      <td>${i+1}</td>
+      <td class="td-name">${escapeHtml(s.hoTen)}</td>
+      <td><select onchange="upsertDailyPartial('${s.id}','${state.dailyDate}','${state.dailyClassId}',{diemDanh:this.value});toast('Đã lưu điểm danh');">
+        <option value="comat" ${rec.diemDanh==='comat'?'selected':''}>Có mặt</option>
+        <option value="phep" ${rec.diemDanh==='phep'?'selected':''}>Vắng có phép</option>
+        <option value="khongphep" ${rec.diemDanh==='khongphep'?'selected':''}>Vắng không phép (-10)</option>
+        <option value="tre" ${rec.diemDanh==='tre'?'selected':''}>Đi trễ (-3)</option>
+      </select></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openDailyDetailModal('${s.id}')">Vi phạm khác <span class="count-pill ${vpCount?'':'zero'}">${vpCount}</span></button></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openDailyDetailModal('${s.id}')">Khen thưởng <span class="count-pill ${ktCount?'cong':'zero'}">${ktCount}</span></button></td>
+      <td><input type="text" class="input-note" value="${escapeHtml(rec.ghiChu||'')}" placeholder="Ghi chú"
+        onchange="upsertDailyPartial('${s.id}','${state.dailyDate}','${state.dailyClassId}',{ghiChu:this.value})"></td>
+    </tr>`;
+  }).join('');
+  return `
+  <div class="view-header"><div><h2>Theo dõi nề nếp hằng ngày</h2><p class="sub">Chọn lớp và ngày. Mỗi thay đổi được lưu tự động. Bấm "Vi phạm khác"/"Khen thưởng" để chọn chi tiết từ bảng tiêu chí.</p></div></div>
+  <div class="filter-bar">
+    <div class="filter-item"><label>Lớp</label><select onchange="state.dailyClassId=this.value;renderView()">${classOptionsHTML(state.dailyClassId,false)}</select></div>
+    <div class="filter-item"><label>Ngày</label><input type="date" value="${state.dailyDate}" onchange="state.dailyDate=this.value;renderView()"></div>
+  </div>
+  <div class="table-wrap"><table class="data-table">
+    <thead><tr><th>STT</th><th>Họ tên</th><th>Điểm danh</th><th>Vi phạm khác</th><th>Khen thưởng</th><th>Ghi chú</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="6" class="empty">Lớp chưa có học sinh</td></tr>'}</tbody>
+  </table></div>`;
+}
+function openDailyDetailModal(studentId){
+  const student = db.students.find(s=>s.id===studentId);
+  const rec = getDailyRecord(studentId, state.dailyDate);
+  const truList = db.criteria.filter(c=>c.loai==='tru' && !ATTENDANCE_CRIT_IDS.includes(c.id));
+  const congList = db.criteria.filter(c=>c.loai==='cong');
+  const vpIds = rec.viPhamIds||[], ktIds = rec.khenThuongIds||[];
+  openModal(`<h3>${escapeHtml(student.hoTen)} — ${formatVN(state.dailyDate)}</h3>
+    <div class="check-group-title">Vi phạm khác</div>
+    ${truList.map(c=>`<label class="check-line"><input type="checkbox" id="md_vp_${c.id}" ${vpIds.includes(c.id)?'checked':''}> ${escapeHtml(c.ten)} (−${c.diem})</label>`).join('')}
+    <div class="check-group-title">Khen thưởng</div>
+    ${congList.map(c=>`<label class="check-line"><input type="checkbox" id="md_kt_${c.id}" ${ktIds.includes(c.id)?'checked':''}> ${escapeHtml(c.ten)} (+${c.diem})</label>`).join('')}
+    <label>Ghi chú</label><textarea id="md_note">${escapeHtml(rec.ghiChu||'')}</textarea>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-primary" onclick="saveDailyDetail('${studentId}')">Lưu</button></div>`);
+}
+function saveDailyDetail(studentId){
+  const truList = db.criteria.filter(c=>c.loai==='tru' && !ATTENDANCE_CRIT_IDS.includes(c.id));
+  const congList = db.criteria.filter(c=>c.loai==='cong');
+  const viPhamIds = truList.filter(c=>document.getElementById('md_vp_'+c.id).checked).map(c=>c.id);
+  const khenThuongIds = congList.filter(c=>document.getElementById('md_kt_'+c.id).checked).map(c=>c.id);
+  const ghiChu = document.getElementById('md_note').value.trim();
+  upsertDailyPartial(studentId, state.dailyDate, state.dailyClassId, {viPhamIds, khenThuongIds, ghiChu});
+  closeModal(); renderView(); toast('Đã lưu ghi nhận nề nếp');
+}
+
+/* ========================= 5. ĐÁNH GIÁ TUẦN ========================= */
+function renderWeekly(){
+  if(!state.weeklyClassId) state.weeklyClassId = db.classes[0]?.id;
+  const weekKeys = getAllWeekKeys(state.weeklyClassId);
+  if(!weekKeys.includes(state.weeklyWeek)) state.weeklyWeek = weekKeys[0];
+  const students = db.students.filter(s=>s.classId===state.weeklyClassId);
+  let countClass={Tốt:0,Khá:0,Đạt:0,'Chưa đạt':0};
+  const rows = students.map((s,i)=>{
+    const raw = computeWeeklyRaw(s.id, state.weeklyWeek);
+    const cum = computeCumulativeAtWeek(s.id, state.weeklyWeek);
+    if(cum.soNgayGhiNhan>0 && countClass[cum.xepLoai]!==undefined) countClass[cum.xepLoai]++;
+    const saved = db.nhanXetTuan.find(n=>n.studentId===s.id && n.weekKey===state.weeklyWeek);
+    const commentText = saved ? saved.text : suggestWeeklyComment(s.id, state.weeklyWeek);
+    const chiTietStr = raw.chiTiet.filter(c=>c.loai==='tru').map(c=>c.ten+' x'+c.soLan).join(', ') || '—';
+    return `<tr>
+      <td>${i+1}</td><td class="td-name">${escapeHtml(s.hoTen)}</td>
+      <td>${raw.tongViPham}</td>
+      <td class="small-text">${escapeHtml(chiTietStr)}</td>
+      <td>+${raw.cong}</td><td>-${raw.tru}</td>
+      <td class="score-cell">${cum.soNgayGhiNhan? cum.diem : '—'}</td>
+      <td>${cum.soNgayGhiNhan? badge(cum.xepLoai) : '<span class="badge badge-none">Chưa có dữ liệu</span>'}</td>
+      <td><textarea class="comment-box" id="cmt_${s.id}" placeholder="Nhận xét tuần...">${escapeHtml(commentText)}</textarea></td>
+    </tr>`;
+  }).join('');
+  const donut = donutSVG([
+    {label:'Tốt', value:countClass['Tốt'], color:'var(--good)'},{label:'Khá', value:countClass['Khá'], color:'var(--fair)'},
+    {label:'Đạt', value:countClass['Đạt'], color:'var(--neutral)'},{label:'Chưa đạt', value:countClass['Chưa đạt'], color:'var(--danger)'},
+  ], 110);
+  return `
+  <div class="view-header"><div><h2>Đánh giá tuần</h2><p class="sub">Cột "trong tuần" chỉ tính vi phạm/việc tốt của riêng tuần đã chọn. Cột "Điểm lũy kế" là điểm nề nếp cộng dồn từ đầu tháng đến hết tuần này (xếp loại mang tính tạm tính, xếp loại chính thức tính vào cuối tháng).</p></div></div>
+  <div class="filter-bar">
+    <div class="filter-item"><label>Lớp</label><select onchange="state.weeklyClassId=this.value;renderView()">${classOptionsHTML(state.weeklyClassId,false)}</select></div>
+    <div class="filter-item"><label>Tuần</label><select onchange="state.weeklyWeek=this.value;renderView()">${weekKeys.map(wk=>`<option value="${wk}" ${wk===state.weeklyWeek?'selected':''}>${weekRangeLabel(wk)}</option>`).join('')}</select></div>
+  </div>
+  <div class="cards-row" style="align-items:center;">
+    <div class="stat-card" style="flex:2;min-width:260px;"><div class="chart-flex">${donut}
+      <div class="legend">
+        <div class="legend-item"><span class="dot" style="background:var(--good)"></span>Tốt: ${countClass['Tốt']}</div>
+        <div class="legend-item"><span class="dot" style="background:var(--fair)"></span>Khá: ${countClass['Khá']}</div>
+        <div class="legend-item"><span class="dot" style="background:var(--neutral)"></span>Đạt: ${countClass['Đạt']}</div>
+        <div class="legend-item"><span class="dot" style="background:var(--danger)"></span>Chưa đạt: ${countClass['Chưa đạt']}</div>
+      </div></div>
+    </div>
+  </div>
+  <div class="table-wrap"><table class="data-table">
+    <thead><tr><th>STT</th><th>Họ tên</th><th>Số lần vi phạm (tuần)</th><th>Chi tiết vi phạm (tuần)</th><th>Điểm cộng (tuần)</th><th>Điểm trừ (tuần)</th><th>Điểm lũy kế tháng</th><th>Xếp loại (tạm tính)</th><th>Nhận xét</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="9" class="empty">Lớp chưa có học sinh</td></tr>'}</tbody>
+  </table></div>
+  <div class="actions-bar">
+    <button class="btn btn-primary" onclick="saveWeeklyComments()">Lưu tất cả nhận xét tuần</button>
+    <button class="btn btn-ghost" onclick="exportWeeklyCSV()">Xuất CSV</button>
+    <button class="btn btn-ghost" onclick="window.print()">In báo cáo tuần</button>
+  </div>`;
+}
+function saveWeeklyComments(){
+  const students = db.students.filter(s=>s.classId===state.weeklyClassId);
+  students.forEach(s=>{
+    const text = document.getElementById('cmt_'+s.id).value;
+    let n = db.nhanXetTuan.find(x=>x.studentId===s.id && x.weekKey===state.weeklyWeek);
+    if(n) n.text = text; else db.nhanXetTuan.push({studentId:s.id, weekKey:state.weeklyWeek, text});
+  });
+  saveDB(); toast('Đã lưu nhận xét tuần');
+}
+function exportWeeklyCSV(){
+  const students = db.students.filter(s=>s.classId===state.weeklyClassId);
+  const clsName = db.classes.find(c=>c.id===state.weeklyClassId)?.ten || '';
+  const header = ['Lớp','Tuần','Họ tên','Số lần vi phạm (tuần)','Điểm cộng (tuần)','Điểm trừ (tuần)','Điểm lũy kế tháng','Xếp loại tạm tính','Nhận xét'];
+  const rows = [header];
+  students.forEach(s=>{
+    const raw = computeWeeklyRaw(s.id, state.weeklyWeek);
+    const cum = computeCumulativeAtWeek(s.id, state.weeklyWeek);
+    const saved = db.nhanXetTuan.find(n=>n.studentId===s.id && n.weekKey===state.weeklyWeek);
+    const cmt = saved ? saved.text : suggestWeeklyComment(s.id, state.weeklyWeek);
+    rows.push([clsName, weekRangeLabel(state.weeklyWeek), s.hoTen, raw.tongViPham, raw.cong, raw.tru, cum.diem, cum.xepLoai, cmt]);
+  });
+  exportCSV('danh_gia_tuan_'+clsName+'_'+state.weeklyWeek+'.csv', rows);
+}
+
+/* ========================= 6. ĐÁNH GIÁ THÁNG ========================= */
+function renderMonthly(){
+  if(!state.monthlyClassId) state.monthlyClassId = db.classes[0]?.id;
+  const monthKeys = getAllMonthKeys(state.monthlyClassId);
+  if(!monthKeys.includes(state.monthlyMonth)) state.monthlyMonth = monthKeys[0];
+  const students = db.students.filter(s=>s.classId===state.monthlyClassId);
+  const rows = students.map((s,i)=>{
+    const m = computeMonthlyScore(s.id, state.monthlyMonth);
+    const chips = m.weekly.map((w,idx)=> w.soNgayGhiNhan>0 ? `<span class="chip">Tuần ${idx+1}: ${w.diem}</span>` : `<span class="chip" style="opacity:.5">Tuần ${idx+1}: —</span>`).join('');
+    const saved = db.nhanXetThang.find(n=>n.studentId===s.id && n.monthKey===state.monthlyMonth);
+    const commentText = saved ? saved.text : suggestMonthlyComment(s.id, state.monthlyMonth);
+    return `<tr>
+      <td>${i+1}</td><td class="td-name">${escapeHtml(s.hoTen)}</td>
+      <td>${chips}</td>
+      <td class="score-cell">${m.diem!=null? m.diem : '—'}</td>
+      <td>${m.tongViPham}</td>
+      <td>${trendBadge(m.trend)}</td>
+      <td>${m.diem!=null? badge(m.xepLoai) : '<span class="badge badge-none">Chưa có dữ liệu</span>'}</td>
+      <td><textarea class="comment-box" id="cmtm_${s.id}" placeholder="Nhận xét tháng...">${escapeHtml(commentText)}</textarea></td>
+    </tr>`;
+  }).join('');
+  return `
+  <div class="view-header"><div><h2>Đánh giá tháng</h2><p class="sub">Điểm cuối tháng = điểm khởi điểm (mặc định 100) + tổng điểm cộng − tổng điểm trừ trong cả tháng.</p></div></div>
+  <div class="filter-bar">
+    <div class="filter-item"><label>Lớp</label><select onchange="state.monthlyClassId=this.value;renderView()">${classOptionsHTML(state.monthlyClassId,false)}</select></div>
+    <div class="filter-item"><label>Tháng</label><select onchange="state.monthlyMonth=this.value;renderView()">${monthKeys.map(mk=>`<option value="${mk}" ${mk===state.monthlyMonth?'selected':''}>${monthLabel(mk)}</option>`).join('')}</select></div>
+  </div>
+  <div class="table-wrap"><table class="data-table">
+    <thead><tr><th>STT</th><th>Họ tên</th><th>Điểm lũy kế từng tuần</th><th>Điểm cuối tháng</th><th>Tổng vi phạm</th><th>Xu hướng</th><th>Xếp loại tháng</th><th>Nhận xét tháng</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="8" class="empty">Lớp chưa có học sinh</td></tr>'}</tbody>
+  </table></div>
+  <div class="actions-bar">
+    <button class="btn btn-primary" onclick="saveMonthlyComments()">Lưu tất cả nhận xét tháng</button>
+    <button class="btn btn-ghost" onclick="exportMonthlyCSV()">Xuất CSV</button>
+    <button class="btn btn-ghost" onclick="window.print()">In báo cáo tháng</button>
+  </div>`;
+}
+function saveMonthlyComments(){
+  const students = db.students.filter(s=>s.classId===state.monthlyClassId);
+  students.forEach(s=>{
+    const text = document.getElementById('cmtm_'+s.id).value;
+    let n = db.nhanXetThang.find(x=>x.studentId===s.id && x.monthKey===state.monthlyMonth);
+    if(n) n.text = text; else db.nhanXetThang.push({studentId:s.id, monthKey:state.monthlyMonth, text});
+  });
+  saveDB(); toast('Đã lưu nhận xét tháng');
+}
+function exportMonthlyCSV(){
+  const students = db.students.filter(s=>s.classId===state.monthlyClassId);
+  const clsName = db.classes.find(c=>c.id===state.monthlyClassId)?.ten || '';
+  const header = ['Lớp','Tháng','Họ tên','Điểm cuối tháng','Tổng vi phạm','Xu hướng','Xếp loại tháng','Nhận xét'];
+  const rows = [header];
+  students.forEach(s=>{
+    const m = computeMonthlyScore(s.id, state.monthlyMonth);
+    const saved = db.nhanXetThang.find(n=>n.studentId===s.id && n.monthKey===state.monthlyMonth);
+    const cmt = saved ? saved.text : suggestMonthlyComment(s.id, state.monthlyMonth);
+    rows.push([clsName, monthLabel(state.monthlyMonth), s.hoTen, m.diem, m.tongViPham, m.trend, m.xepLoai, cmt]);
+  });
+  exportCSV('danh_gia_thang_'+clsName+'_'+state.monthlyMonth+'.csv', rows);
+}
+
+/* ========================= 7. VI PHẠM ========================= */
+function renderViolations(){
+  if(!state.violClassId) state.violClassId = db.classes[0]?.id;
+  const truCriteria = db.criteria.filter(c=>c.loai==='tru');
+  const students = db.students.filter(s=>s.classId===state.violClassId);
+  let list = [];
+  db.dailyRecords.filter(r=>r.classId===state.violClassId && r.ngay>=state.violFrom && r.ngay<=state.violTo).forEach(r=>{
+    const student = db.students.find(s=>s.id===r.studentId);
+    if(!student) return;
+    if(state.violStudent!=='all' && student.id!==state.violStudent) return;
+    const events = [];
+    if(r.diemDanh==='khongphep') events.push('vangkhongphep');
+    if(r.diemDanh==='tre') events.push('ditre');
+    (r.viPhamIds||[]).forEach(id=>events.push(id));
+    events.forEach(critId=>{
+      if(state.violType!=='all' && critId!==state.violType) return;
+      const c = db.criteria.find(x=>x.id===critId);
+      list.push({ngay:r.ngay, hoTen:student.hoTen, loai:c?c.ten:critId, ghiChu:r.ghiChu||''});
+    });
+  });
+  list.sort((a,b)=> b.ngay.localeCompare(a.ngay));
+  const rows = list.map(v=>`<tr><td>${formatVN(v.ngay)}</td><td class="td-name">${escapeHtml(v.hoTen)}</td><td>${escapeHtml(v.loai)}</td><td class="small-text">${escapeHtml(v.ghiChu)||'—'}</td></tr>`).join('');
+  return `
+  <div class="view-header"><div><h2>Vi phạm</h2><p class="sub">Tra cứu lịch sử vi phạm nề nếp theo lớp và khoảng thời gian.</p></div></div>
+  <div class="filter-bar">
+    <div class="filter-item"><label>Lớp</label><select onchange="state.violClassId=this.value;renderView()">${classOptionsHTML(state.violClassId,false)}</select></div>
+    <div class="filter-item"><label>Từ ngày</label><input type="date" value="${state.violFrom}" onchange="state.violFrom=this.value;renderView()"></div>
+    <div class="filter-item"><label>Đến ngày</label><input type="date" value="${state.violTo}" onchange="state.violTo=this.value;renderView()"></div>
+    <div class="filter-item"><label>Loại vi phạm</label><select onchange="state.violType=this.value;renderView()">
+      <option value="all" ${state.violType==='all'?'selected':''}>Tất cả</option>
+      ${truCriteria.map(c=>`<option value="${c.id}" ${state.violType===c.id?'selected':''}>${escapeHtml(c.ten)}</option>`).join('')}
+    </select></div>
+    <div class="filter-item"><label>Học sinh</label><select onchange="state.violStudent=this.value;renderView()">
+      <option value="all" ${state.violStudent==='all'?'selected':''}>Tất cả</option>
+      ${students.map(s=>`<option value="${s.id}" ${state.violStudent===s.id?'selected':''}>${escapeHtml(s.hoTen)}</option>`).join('')}
+    </select></div>
+  </div>
+  <div class="table-wrap"><table class="data-table">
+    <thead><tr><th>Ngày</th><th>Học sinh</th><th>Loại vi phạm</th><th>Ghi chú</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="4" class="empty">Không có vi phạm nào trong khoảng thời gian đã chọn</td></tr>'}</tbody>
+  </table></div>`;
+}
+
+/* ========================= 8. THỐNG KÊ ========================= */
+function renderStats(){
+  if(!state.statsClassId) state.statsClassId = db.classes[0]?.id;
+  const weekKeys = getAllWeekKeys(state.statsClassId);
+  if(!weekKeys.includes(state.statsWeek)) state.statsWeek = weekKeys[0];
+  const students = db.students.filter(s=>s.classId===state.statsClassId);
+  let countClass={Tốt:0,Khá:0,Đạt:0,'Chưa đạt':0}, sum=0, n=0, tongViPhamLop=0;
+  const barLabels=[], barValues=[], barColors=[];
+  students.forEach(s=>{
+    const raw = computeWeeklyRaw(s.id, state.statsWeek);
+    const cum = computeCumulativeAtWeek(s.id, state.statsWeek);
+    barLabels.push(s.hoTen.split(' ').slice(-1)[0]);
+    barValues.push(cum.diem);
+    barColors.push(CHART_COLOR[cum.xepLoai]||'var(--accent-gold)');
+    if(cum.soNgayGhiNhan>0){ sum+=cum.diem; n++; tongViPhamLop+=raw.tongViPham; if(countClass[cum.xepLoai]!==undefined) countClass[cum.xepLoai]++; }
+  });
+  const donut = donutSVG([
+    {label:'Tốt', value:countClass['Tốt'], color:'var(--good)'},{label:'Khá', value:countClass['Khá'], color:'var(--fair)'},
+    {label:'Đạt', value:countClass['Đạt'], color:'var(--neutral)'},{label:'Chưa đạt', value:countClass['Chưa đạt'], color:'var(--danger)'},
+  ], 130);
+  const trendWeeks = getAllWeekKeys(state.statsClassId).slice(0,8).reverse();
+  let trendVals, trendLabels = trendWeeks.map(wk=>formatVN(wk).slice(0,5));
+  if(state.statsMode==='__class__'){
+    trendVals = trendWeeks.map(wk=>{ let s2=0,n2=0; students.forEach(st=>{const r=computeCumulativeAtWeek(st.id,wk); if(r.soNgayGhiNhan>0){s2+=r.diem;n2++;}}); return n2? Math.round((s2/n2)*10)/10 : 0; });
+  } else {
+    trendVals = trendWeeks.map(wk=> computeCumulativeAtWeek(state.statsMode, wk).diem);
+  }
+  const studentModeOptions = `<option value="__class__" ${state.statsMode==='__class__'?'selected':''}>Trung bình cả lớp</option>` +
+    students.map(s=>`<option value="${s.id}" ${state.statsMode===s.id?'selected':''}>${escapeHtml(s.hoTen)}</option>`).join('');
+  return `
+  <div class="view-header"><div><h2>Thống kê</h2><p class="sub">So sánh kết quả rèn luyện trong lớp và theo dõi xu hướng theo thời gian.</p></div></div>
+  <div class="filter-bar">
+    <div class="filter-item"><label>Lớp</label><select onchange="state.statsClassId=this.value;renderView()">${classOptionsHTML(state.statsClassId,false)}</select></div>
+    <div class="filter-item"><label>Tuần</label><select onchange="state.statsWeek=this.value;renderView()">${weekKeys.map(wk=>`<option value="${wk}" ${wk===state.statsWeek?'selected':''}>${weekRangeLabel(wk)}</option>`).join('')}</select></div>
+  </div>
+  <div class="cards-row">
+    <div class="stat-card"><div class="label">Điểm lũy kế TB lớp (tuần chọn)</div><div class="value">${n? Math.round((sum/n)*10)/10 : '—'}</div></div>
+    <div class="stat-card"><div class="label">Tổng vi phạm cả lớp (trong tuần)</div><div class="value">${tongViPhamLop}</div></div>
+    <div class="stat-card"><div class="label">Sĩ số</div><div class="value">${students.length}</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><h3>Điểm lũy kế tháng của từng học sinh (đến tuần chọn)</h3>${barSVG(barLabels, barValues, {colors:barColors})}</div>
+    <div class="card"><h3>Phân loại rèn luyện tuần chọn</h3>
+      <div class="chart-flex">${donut}
+        <div class="legend">
+          <div class="legend-item"><span class="dot" style="background:var(--good)"></span>Tốt: ${countClass['Tốt']}</div>
+          <div class="legend-item"><span class="dot" style="background:var(--fair)"></span>Khá: ${countClass['Khá']}</div>
+          <div class="legend-item"><span class="dot" style="background:var(--neutral)"></span>Đạt: ${countClass['Đạt']}</div>
+          <div class="legend-item"><span class="dot" style="background:var(--danger)"></span>Chưa đạt: ${countClass['Chưa đạt']}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3 style="margin-bottom:6px;">Theo dõi sự tiến bộ theo tuần</h3>
+    <div class="filter-bar" style="margin-bottom:10px;">
+      <div class="filter-item"><label>Xem tiến bộ của</label><select onchange="state.statsMode=this.value;renderView()">${studentModeOptions}</select></div>
+    </div>
+    ${lineSVG(trendLabels, trendVals)}
+  </div>`;
+}
+
+/* ========================= 9. NHẬN XÉT HỌC SINH ========================= */
+function renderComments(){
+  let list = db.students;
+  if(state.commentsSearch.trim()){
+    const q = state.commentsSearch.trim().toLowerCase();
+    list = list.filter(s=> s.hoTen.toLowerCase().includes(q) || s.maHS.toLowerCase().includes(q));
+  }
+  if(!state.commentsStudentId && list.length) state.commentsStudentId = list[0].id;
+  const selected = db.students.find(s=>s.id===state.commentsStudentId);
+  const listHTML = list.map(s=>`<div class="student-list-item ${s.id===state.commentsStudentId?'active':''}" onclick="state.commentsStudentId='${s.id}';renderView()">${escapeHtml(s.hoTen)} <span style="color:var(--ink-soft);font-size:11.5px;">(${escapeHtml(s.maHS)})</span></div>`).join('');
+  let detailHTML = '<div class="card">Chọn một học sinh để xem/sửa nhận xét.</div>';
+  if(selected){
+    const cls = db.classes.find(c=>c.id===selected.classId);
+    const weekEntries = db.nhanXetTuan.filter(n=>n.studentId===selected.id).sort((a,b)=>b.weekKey.localeCompare(a.weekKey));
+    const monthEntries = db.nhanXetThang.filter(n=>n.studentId===selected.id).sort((a,b)=>b.monthKey.localeCompare(a.monthKey));
+    detailHTML = `
+      <div class="card" style="margin-bottom:16px;">
+        <h3>${escapeHtml(selected.hoTen)}</h3>
+        <div class="small-text">Mã HS: ${escapeHtml(selected.maHS)} · Lớp: ${cls?escapeHtml(cls.ten):'—'} · ${escapeHtml(selected.gioiTinh)} · ${escapeHtml(selected.ngaySinh)}</div>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <h3>Nhận xét theo tuần</h3>
+        ${weekEntries.length ? weekEntries.map(n=>`<div style="margin-bottom:10px;"><div class="small-text" style="margin-bottom:4px;font-weight:600;">Tuần ${weekRangeLabel(n.weekKey)}</div>
+          <textarea id="qc_w_${n.weekKey}">${escapeHtml(n.text)}</textarea>
+          <button class="btn btn-ghost btn-sm" style="margin-top:5px;" onclick="quickSaveWeekComment('${n.weekKey}')">Lưu</button></div>`).join('')
+          : '<div class="small-text">Chưa có nhận xét tuần nào được lưu. Vào mục "Đánh giá tuần" để tạo nhận xét.</div>'}
+      </div>
+      <div class="card">
+        <h3>Nhận xét theo tháng</h3>
+        ${monthEntries.length ? monthEntries.map(n=>`<div style="margin-bottom:10px;"><div class="small-text" style="margin-bottom:4px;font-weight:600;">${monthLabel(n.monthKey)}</div>
+          <textarea id="qc_m_${n.monthKey}">${escapeHtml(n.text)}</textarea>
+          <button class="btn btn-ghost btn-sm" style="margin-top:5px;" onclick="quickSaveMonthComment('${n.monthKey}')">Lưu</button></div>`).join('')
+          : '<div class="small-text">Chưa có nhận xét tháng nào được lưu. Vào mục "Đánh giá tháng" để tạo nhận xét.</div>'}
+      </div>`;
+  }
+  return `
+  <div class="view-header"><div><h2>Nhận xét học sinh</h2><p class="sub">Xem và chỉnh sửa nhận xét tuần/tháng đã lưu cho từng học sinh.</p></div></div>
+  <div class="two-col">
+    <div><div class="search-box"><input type="text" placeholder="Tìm học sinh..." value="${escapeHtml(state.commentsSearch)}" oninput="state.commentsSearch=this.value;renderView()"></div>
+      <div class="student-list">${listHTML || '<div class="empty">Không có học sinh</div>'}</div></div>
+    <div>${detailHTML}</div>
+  </div>`;
+}
+function quickSaveWeekComment(weekKey){
+  const n = db.nhanXetTuan.find(x=>x.studentId===state.commentsStudentId && x.weekKey===weekKey);
+  if(n){ n.text = document.getElementById('qc_w_'+weekKey).value; saveDB(); toast('Đã lưu nhận xét tuần'); }
+}
+function quickSaveMonthComment(monthKey){
+  const n = db.nhanXetThang.find(x=>x.studentId===state.commentsStudentId && x.monthKey===monthKey);
+  if(n){ n.text = document.getElementById('qc_m_'+monthKey).value; saveDB(); toast('Đã lưu nhận xét tháng'); }
+}
+
+/* ========================= 10. CÀI ĐẶT TIÊU CHÍ ĐÁNH GIÁ ========================= */
+function renderSettings(){
+  const critRows = db.criteria.map(c=>`<tr>
+    <td class="td-name">${escapeHtml(c.ten)}</td>
+    <td>${c.loai==='cong'?'<span style="color:var(--good);font-weight:600;">Cộng điểm</span>':'<span style="color:var(--danger);font-weight:600;">Trừ điểm</span>'}</td>
+    <td>${c.diem}</td><td>${c.trongso}</td><td class="small-text">${escapeHtml(c.ghiChu)||'—'}</td>
+    <td><div class="row-actions"><button class="btn btn-ghost btn-sm" onclick="openCriteriaModal('${c.id}')">Sửa</button>
+    <button class="btn btn-danger btn-sm" onclick="deleteCriteria('${c.id}')">Xóa</button></div></td></tr>`).join('');
+  const thRows = db.thresholds.map(t=>`<tr>
+    <td class="td-name">${badge(t.xepLoai)}</td><td>${t.tu===''?'Không giới hạn':t.tu}</td><td>${t.den===''?'Không giới hạn':t.den}</td>
+    <td class="small-text">${escapeHtml(t.ghiChu)||'—'}</td>
+    <td><div class="row-actions"><button class="btn btn-ghost btn-sm" onclick="openThresholdModal('${t.id}')">Sửa</button>
+    <button class="btn btn-danger btn-sm" onclick="deleteThreshold('${t.id}')">Xóa</button></div></td></tr>`).join('');
+  return `
+  <div class="view-header"><div><h2>Cài đặt tiêu chí đánh giá</h2><p class="sub">Điểm cộng/trừ, trọng số và ngưỡng xếp loại — thầy/cô toàn quyền chỉnh sửa theo quy định thực tế của trường/Sở GD&ĐT.</p></div></div>
+  <div class="banner"><strong>Đang áp dụng:</strong> Bảng tiêu chí và ngưỡng xếp loại dưới đây được thiết lập theo quy định thầy/cô đã cung cấp. Thầy/cô có thể sửa/xóa/thêm bất cứ lúc nào nếu nhà trường điều chỉnh quy định.</div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <h3>Điểm khởi điểm mỗi tháng</h3>
+    <div class="filter-bar" style="margin-bottom:0;">
+      <div class="filter-item"><label>Điểm khởi điểm</label><input type="number" id="f_base" value="${db.settings.diemKhoiDiem}" style="width:120px;"></div>
+      <button class="btn btn-ghost" onclick="saveBaseScore()">Lưu</button>
+    </div>
+  </div>
+
+  <div class="view-header" style="margin-bottom:10px;"><h3 style="font-size:15px;">Bảng tiêu chí (điểm cộng / trừ)</h3>
+    <button class="btn btn-primary btn-sm" onclick="openCriteriaModal()">+ Thêm tiêu chí</button></div>
+  <div class="table-wrap" style="margin-bottom:22px;"><table class="data-table">
+    <thead><tr><th>Tiêu chí</th><th>Loại</th><th>Điểm</th><th>Trọng số</th><th>Ghi chú</th><th style="width:120px">Hành động</th></tr></thead>
+    <tbody>${critRows || '<tr><td colspan="6" class="empty">Chưa có tiêu chí nào</td></tr>'}</tbody>
+  </table></div>
+
+  <div class="view-header" style="margin-bottom:10px;"><h3 style="font-size:15px;">Ngưỡng xếp loại (áp dụng cuối tháng)</h3>
+    <button class="btn btn-primary btn-sm" onclick="openThresholdModal()">+ Thêm ngưỡng</button></div>
+  <div class="table-wrap" style="margin-bottom:22px;"><table class="data-table">
+    <thead><tr><th>Xếp loại</th><th>Điểm từ</th><th>Điểm đến</th><th>Ghi chú</th><th style="width:120px">Hành động</th></tr></thead>
+    <tbody>${thRows || '<tr><td colspan="5" class="empty">Chưa có ngưỡng xếp loại nào</td></tr>'}</tbody>
+  </table></div>
+
+  <div class="card" style="margin-bottom:22px;">
+    <h3>Quy tắc đặc biệt khác</h3>
+    <p class="small-text" style="margin-top:-4px;">Ghi chú tham khảo cho giáo viên khi nhận xét. Hệ thống hiện chưa tự động áp dụng các quy tắc phức tạp (ví dụ: quy tắc kết hợp nhiều điều kiện) vào điểm số.</p>
+    <textarea id="f_rules" style="min-height:90px;" placeholder="VD: Học sinh vi phạm sử dụng điện thoại từ 2 lần/tháng trở lên thì xếp loại tháng tối đa là Đạt...">${escapeHtml(db.settings.quyTacDacBiet||'')}</textarea>
+    <div class="actions-bar"><button class="btn btn-ghost" onclick="saveSpecialRules()">Lưu quy tắc</button></div>
+  </div>
+
+  <div class="card" style="margin-bottom:22px;">
+    <h3>Đồng bộ với Google Sheets (chạy trực tuyến)</h3>
+    <p class="small-text" style="margin-top:-4px;">Dữ liệu được đọc/ghi trực tiếp vào một bảng tính Google Sheets có tên "<strong>${SPREADSHEET_NAME}</strong>" (tự động tạo ở Drive gốc nếu chưa có), gồm các tab: Lop, HocSinh, NeNep_HangNgay, TieuChi, NguongXepLoai, NhanXet_Tuan, NhanXet_Thang, CaiDat — đóng vai trò cơ sở dữ liệu trực tuyến, nhiều máy/nhiều GV có thể cùng truy cập.</p>
+    <div class="banner" style="margin-bottom:12px;">Lưu ý quan trọng: tính năng này chỉ hoạt động khi file được mở qua một địa chỉ <strong>http/https</strong> (ví dụ host trên GitHub Pages, Netlify, trường/Sở cấp một trang web...). Mở trực tiếp file trên máy (file://) sẽ <strong>không</strong> đăng nhập Google được.</div>
+    ${driveState.accessToken ? `
+      <div class="banner" style="background:var(--good-soft);border-color:var(--good);color:#1c4530;">✓ Đã kết nối Google.${driveState.spreadsheetId?` Bảng tính: <a href="https://docs.google.com/spreadsheets/d/${driveState.spreadsheetId}/edit" target="_blank" rel="noopener">Mở trên Google Sheets ↗</a>`:''}</div>
+      <div class="actions-bar" style="margin-top:0;">
+        <button class="btn btn-primary" onclick="syncUpload()">Tải dữ liệu lên Sheets</button>
+        <button class="btn btn-ghost" onclick="syncDownload()">Tải dữ liệu từ Sheets về (ghi đè)</button>
+        <button class="btn btn-danger" onclick="disconnectDrive()">Ngắt kết nối</button>
+      </div>
+    ` : `
+      <details style="margin:10px 0;">
+        <summary style="cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-soft);">Hướng dẫn lấy Google Client ID (thực hiện 1 lần)</summary>
+        <ol class="small-text" style="padding-left:18px;line-height:1.8;">
+          <li>Vào <strong>console.cloud.google.com</strong> → tạo một Project mới.</li>
+          <li>"APIs & Services" → "Library" → bật <strong>Google Drive API</strong> và <strong>Google Sheets API</strong>.</li>
+          <li>"OAuth consent screen" → chọn "External" → điền thông tin cơ bản → ở "Test users" thêm đúng email Gmail thầy/cô sẽ dùng để đăng nhập.</li>
+          <li>"Credentials" → "Create Credentials" → "OAuth client ID" → loại "Web application".</li>
+          <li>Ở "Authorized JavaScript origins", thêm đúng địa chỉ http/https nơi thầy/cô host file này (VD: https://ten-truong.github.io).</li>
+          <li>Copy "Client ID" (dạng ...apps.googleusercontent.com) và dán vào ô bên dưới.</li>
+        </ol>
+      </details>
+      <div class="filter-bar" style="margin-bottom:0;">
+        <div class="filter-item" style="flex:1;min-width:260px;"><label>Google Client ID</label><input type="text" id="f_client_id" value="${escapeHtml(db.settings.driveClientId||'')}" placeholder="xxxxxxxxxx.apps.googleusercontent.com"></div>
+        <button class="btn btn-primary" onclick="connectDrive()">Kết nối Google Sheets</button>
+      </div>
+    `}
+  </div>
+
+  <div class="card">
+    <h3 style="color:var(--danger);">Khu vực nguy hiểm</h3>
+    <p class="small-text">Xóa toàn bộ dữ liệu hiện tại (lớp, học sinh, nề nếp, nhận xét, cấu hình) và khôi phục lại dữ liệu mẫu ban đầu (lớp 11A3).</p>
+    <button class="btn btn-danger" onclick="resetSample()">Khôi phục dữ liệu ban đầu</button>
+  </div>`;
+}
+function openCriteriaModal(id){
+  const c = id ? db.criteria.find(x=>x.id===id) : null;
+  openModal(`<h3>${c?'Sửa tiêu chí':'Thêm tiêu chí mới'}</h3>
+    <label>Tên tiêu chí</label><input id="f_ten" value="${c?escapeHtml(c.ten):''}">
+    <label>Loại</label><select id="f_loai"><option value="cong" ${c&&c.loai==='cong'?'selected':''}>Cộng điểm</option><option value="tru" ${c&&c.loai==='tru'?'selected':''}>Trừ điểm</option></select>
+    <label>Điểm (mỗi lần)</label><input type="number" id="f_diem" value="${c?c.diem:0}">
+    <label>Trọng số</label><input type="number" step="0.1" id="f_trongso" value="${c?c.trongso:1}">
+    <label>Ghi chú / quy tắc riêng</label><input id="f_ghichu" value="${c?escapeHtml(c.ghiChu||''):''}">
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-primary" onclick="saveCriteria('${id||''}')">Lưu</button></div>`);
+}
+function saveCriteria(id){
+  const ten = document.getElementById('f_ten').value.trim();
+  const loai = document.getElementById('f_loai').value;
+  const diem = Number(document.getElementById('f_diem').value)||0;
+  const trongso = Number(document.getElementById('f_trongso').value)||1;
+  const ghiChu = document.getElementById('f_ghichu').value.trim();
+  if(!ten){ alert('Vui lòng nhập tên tiêu chí'); return; }
+  if(id){ const c=db.criteria.find(x=>x.id===id); Object.assign(c,{ten,loai,diem,trongso,ghiChu}); }
+  else db.criteria.push({id:uid('crit'), ten, loai, diem, trongso, ghiChu});
+  saveDB(); closeModal(); renderView(); toast('Đã lưu tiêu chí');
+}
+function deleteCriteria(id){
+  if(ATTENDANCE_CRIT_IDS.includes(id)){ alert('Không thể xóa tiêu chí này vì được gắn với mục Điểm danh. Có thể sửa điểm/tên nếu cần.'); return; }
+  if(!confirm('Xóa tiêu chí này? Các lần ghi nhận trong quá khứ liên quan sẽ không còn được tính điểm.')) return;
+  db.criteria = db.criteria.filter(c=>c.id!==id); saveDB(); renderView(); toast('Đã xóa tiêu chí');
+}
+function openThresholdModal(id){
+  const t = id ? db.thresholds.find(x=>x.id===id) : null;
+  openModal(`<h3>${t?'Sửa ngưỡng xếp loại':'Thêm ngưỡng xếp loại'}</h3>
+    <label>Tên xếp loại</label><input id="f_xeploai" value="${t?escapeHtml(t.xepLoai):''}" placeholder="VD: Tốt">
+    <label>Điểm từ</label><input id="f_tu" value="${t?t.tu:''}" placeholder="Để trống = không giới hạn dưới">
+    <label>Điểm đến</label><input id="f_den" value="${t?t.den:''}" placeholder="Để trống = không giới hạn trên">
+    <label>Ghi chú</label><input id="f_ghichu_th" value="${t?escapeHtml(t.ghiChu||''):''}" placeholder="VD: Mời cha mẹ học sinh phối hợp giáo dục">
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-primary" onclick="saveThreshold('${id||''}')">Lưu</button></div>`);
+}
+function saveThreshold(id){
+  const xepLoai = document.getElementById('f_xeploai').value.trim();
+  const tu = document.getElementById('f_tu').value.trim();
+  const den = document.getElementById('f_den').value.trim();
+  const ghiChu = document.getElementById('f_ghichu_th').value.trim();
+  if(!xepLoai){ alert('Vui lòng nhập tên xếp loại'); return; }
+  if(id){ const t=db.thresholds.find(x=>x.id===id); Object.assign(t,{xepLoai,tu,den,ghiChu}); }
+  else db.thresholds.push({id:uid('th'), xepLoai, tu, den, ghiChu});
+  saveDB(); closeModal(); renderView(); toast('Đã lưu ngưỡng xếp loại');
+}
+function deleteThreshold(id){ if(!confirm('Xóa ngưỡng xếp loại này?')) return; db.thresholds = db.thresholds.filter(t=>t.id!==id); saveDB(); renderView(); }
+function saveBaseScore(){ db.settings.diemKhoiDiem = Number(document.getElementById('f_base').value)||0; saveDB(); toast('Đã lưu điểm khởi điểm'); renderView(); }
+function saveSpecialRules(){ db.settings.quyTacDacBiet = document.getElementById('f_rules').value; saveDB(); toast('Đã lưu quy tắc đặc biệt'); }
+function resetSample(){
+  if(!confirm('Thao tác này sẽ XÓA toàn bộ dữ liệu hiện tại và khôi phục dữ liệu ban đầu (lớp 11A3). Bạn chắc chắn muốn tiếp tục?')) return;
+  localStorage.removeItem(DB_KEY);
+  db = seedDB(); saveDB();
+  state.dailyClassId=null; state.weeklyClassId=null; state.monthlyClassId=null; state.violClassId=null; state.statsClassId=null;
+  nav('dashboard'); toast('Đã khôi phục dữ liệu ban đầu');
+}
+
+/* ========================= ĐỒNG BỘ GOOGLE SHEETS (CSDL) ========================= */
+/* Toàn bộ dữ liệu được đọc/ghi trực tiếp vào 1 Google Spreadsheet (nhiều tab),
+   đóng vai trò cơ sở dữ liệu trực tuyến. Yêu cầu: file này phải được mở qua
+   địa chỉ http/https (không phải mở trực tiếp kiểu file://), và cần một
+   Google Client ID do thầy/cô tự tạo (xem hướng dẫn trong mục Cài đặt). */
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets';
+const SPREADSHEET_NAME = 'QuanLyNeNep_DuLieu';
+const SHEET_DEFS = {
+  Lop: ['id','ten','gvcn'],
+  HocSinh: ['id','maHS','hoTen','gioiTinh','ngaySinh','sdt','classId'],
+  NeNep_HangNgay: ['id','studentId','classId','ngay','diemDanh','viPhamIds','khenThuongIds','ghiChu'],
+  TieuChi: ['id','ten','loai','diem','trongso','ghiChu'],
+  NguongXepLoai: ['id','xepLoai','tu','den','ghiChu'],
+  NhanXet_Tuan: ['studentId','weekKey','text'],
+  NhanXet_Thang: ['studentId','monthKey','text'],
+  CaiDat: ['key','value'],
+};
+const driveState = { accessToken:null, email:null, spreadsheetId:null, tokenClient:null, busy:false };
+
+function loadGIS(callback){
+  if(window.google && google.accounts && google.accounts.oauth2){ callback(); return; }
+  const s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client'; s.async=true;
+  s.onload=callback; s.onerror=()=>alert('Không tải được thư viện đăng nhập Google. Kiểm tra kết nối mạng.');
+  document.head.appendChild(s);
+}
+function connectDrive(){
+  const inputEl = document.getElementById('f_client_id');
+  const clientId = (inputEl ? inputEl.value.trim() : '') || db.settings.driveClientId;
+  if(!clientId){ alert('Vui lòng nhập Google Client ID trước khi kết nối.'); return; }
+  if(location.protocol==='file:'){ alert('Không thể đăng nhập Google khi mở file trực tiếp (file://). Thầy/cô cần host file này qua một địa chỉ http/https (VD: GitHub Pages, Netlify...) rồi mở bằng địa chỉ đó.'); return; }
+  db.settings.driveClientId = clientId; saveDB();
+  loadGIS(()=>{
+    driveState.tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: DRIVE_SCOPE,
+      callback: async (resp)=>{
+        if(resp.error){ alert('Kết nối Google thất bại: '+resp.error); return; }
+        driveState.accessToken = resp.access_token;
+        toast('Đã đăng nhập Google, đang chuẩn bị bảng tính...');
+        try{
+          await ensureSpreadsheet();
+          toast('Đã kết nối Google Sheets');
+        }catch(e){ console.error(e); alert('Kết nối được Google nhưng lỗi khi chuẩn bị bảng tính: '+e.message); }
+        renderView();
+      }
+    });
+    driveState.tokenClient.requestAccessToken();
+  });
+}
+function disconnectDrive(){ driveState.accessToken=null; driveState.spreadsheetId=null; toast('Đã ngắt kết nối Google Sheets'); renderView(); }
+
+async function gapiFetch(url, opts){
+  opts = opts||{};
+  opts.headers = Object.assign({}, opts.headers, {Authorization: 'Bearer '+driveState.accessToken});
+  const res = await fetch(url, opts);
+  if(!res.ok){ const t=await res.text(); throw new Error('Lỗi API Google ('+res.status+'): '+t.slice(0,200)); }
+  if(res.status===204) return {};
+  return res.json();
+}
+async function ensureSpreadsheet(){
+  const q = `name='${SPREADSHEET_NAME}' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false`;
+  const list = await gapiFetch('https://www.googleapis.com/drive/v3/files?q='+encodeURIComponent(q)+'&fields=files(id,name)');
+  if(list.files && list.files.length){
+    driveState.spreadsheetId = list.files[0].id;
+    await ensureSheetsExist();
+    return;
+  }
+  const sheets = Object.keys(SHEET_DEFS).map(title=>({properties:{title}}));
+  const created = await gapiFetch('https://sheets.googleapis.com/v4/spreadsheets', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({properties:{title:SPREADSHEET_NAME}, sheets})
+  });
+  driveState.spreadsheetId = created.spreadsheetId;
+  const def = created.sheets.find(s=>s.properties.title==='Sheet1');
+  if(def) { /* spreadsheet created fresh with our named tabs, no default Sheet1 expected since we defined all titles */ }
+}
+async function ensureSheetsExist(){
+  const meta = await gapiFetch(`https://sheets.googleapis.com/v4/spreadsheets/${driveState.spreadsheetId}?fields=sheets.properties.title`);
+  const existing = new Set((meta.sheets||[]).map(s=>s.properties.title));
+  const missing = Object.keys(SHEET_DEFS).filter(t=>!existing.has(t));
+  if(missing.length){
+    const requests = missing.map(title=>({addSheet:{properties:{title}}}));
+    await gapiFetch(`https://sheets.googleapis.com/v4/spreadsheets/${driveState.spreadsheetId}:batchUpdate`, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({requests})
+    });
+  }
+}
+function toRows(items, cols){
+  const data = (items||[]).map(item=> cols.map(c=>{
+    let v = item[c];
+    if(Array.isArray(v)) v = v.join(';');
+    if(v==null) v='';
+    return String(v);
+  }));
+  return [cols, ...data];
+}
+function fromRows(values, cols, arrayCols){
+  arrayCols = arrayCols||[];
+  if(!values || values.length<2) return [];
+  const header = values[0];
+  const idx = {}; header.forEach((h,i)=>idx[h]=i);
+  return values.slice(1).filter(r=>r && r.length).map(r=>{
+    const obj = {};
+    cols.forEach(c=>{
+      let v = idx[c]!=null && r[idx[c]]!==undefined ? r[idx[c]] : '';
+      if(arrayCols.includes(c)) v = v ? String(v).split(';').filter(Boolean) : [];
+      obj[c]=v;
+    });
+    return obj;
+  });
+}
+async function writeSheet(title, rows){
+  await gapiFetch(`https://sheets.googleapis.com/v4/spreadsheets/${driveState.spreadsheetId}/values/${encodeURIComponent(title)}:clear`, {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'});
+  await gapiFetch(`https://sheets.googleapis.com/v4/spreadsheets/${driveState.spreadsheetId}/values/${encodeURIComponent(title)}!A1?valueInputOption=RAW`, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({values:rows})});
+}
+async function readSheet(title){
+  const res = await gapiFetch(`https://sheets.googleapis.com/v4/spreadsheets/${driveState.spreadsheetId}/values/${encodeURIComponent(title)}`);
+  return res.values || [];
+}
+async function syncUpload(){
+  if(!driveState.accessToken){ alert('Chưa kết nối Google Sheets.'); return; }
+  if(driveState.busy) return; driveState.busy=true;
+  toast('Đang tải dữ liệu lên Google Sheets...');
+  try{
+    if(!driveState.spreadsheetId) await ensureSpreadsheet();
+    await writeSheet('Lop', toRows(db.classes, SHEET_DEFS.Lop));
+    await writeSheet('HocSinh', toRows(db.students, SHEET_DEFS.HocSinh));
+    await writeSheet('NeNep_HangNgay', toRows(db.dailyRecords, SHEET_DEFS.NeNep_HangNgay));
+    await writeSheet('TieuChi', toRows(db.criteria, SHEET_DEFS.TieuChi));
+    await writeSheet('NguongXepLoai', toRows(db.thresholds, SHEET_DEFS.NguongXepLoai));
+    await writeSheet('NhanXet_Tuan', toRows(db.nhanXetTuan, SHEET_DEFS.NhanXet_Tuan));
+    await writeSheet('NhanXet_Thang', toRows(db.nhanXetThang, SHEET_DEFS.NhanXet_Thang));
+    await writeSheet('CaiDat', [['key','value'],['diemKhoiDiem', String(db.settings.diemKhoiDiem)],['quyTacDacBiet', db.settings.quyTacDacBiet||'']]);
+    toast('Đã lưu toàn bộ dữ liệu lên Google Sheets');
+  }catch(e){ console.error(e); alert('Lỗi khi tải lên Google Sheets: '+e.message); }
+  driveState.busy=false; renderView();
+}
+async function syncDownload(){
+  if(!driveState.accessToken){ alert('Chưa kết nối Google Sheets.'); return; }
+  if(!confirm('Thao tác này sẽ GHI ĐÈ dữ liệu hiện tại trên máy này bằng dữ liệu đang có trên Google Sheets. Tiếp tục?')) return;
+  if(driveState.busy) return; driveState.busy=true;
+  toast('Đang tải dữ liệu từ Google Sheets về...');
+  try{
+    if(!driveState.spreadsheetId) await ensureSpreadsheet();
+    const lop = fromRows(await readSheet('Lop'), SHEET_DEFS.Lop);
+    const hs = fromRows(await readSheet('HocSinh'), SHEET_DEFS.HocSinh);
+    const nn = fromRows(await readSheet('NeNep_HangNgay'), SHEET_DEFS.NeNep_HangNgay, ['viPhamIds','khenThuongIds']);
+    const tc = fromRows(await readSheet('TieuChi'), SHEET_DEFS.TieuChi);
+    const nx = fromRows(await readSheet('NguongXepLoai'), SHEET_DEFS.NguongXepLoai);
+    const nxt = fromRows(await readSheet('NhanXet_Tuan'), SHEET_DEFS.NhanXet_Tuan);
+    const nxth = fromRows(await readSheet('NhanXet_Thang'), SHEET_DEFS.NhanXet_Thang);
+    const cd = await readSheet('CaiDat');
+    if(lop.length) db.classes = lop;
+    if(hs.length) db.students = hs;
+    db.dailyRecords = nn;
+    if(tc.length) db.criteria = tc.map(c=>({...c, diem:Number(c.diem)||0, trongso:Number(c.trongso)||1}));
+    if(nx.length) db.thresholds = nx;
+    db.nhanXetTuan = nxt;
+    db.nhanXetThang = nxth;
+    (cd||[]).slice(1).forEach(r=>{
+      if(r[0]==='diemKhoiDiem') db.settings.diemKhoiDiem = Number(r[1])||100;
+      if(r[0]==='quyTacDacBiet') db.settings.quyTacDacBiet = r[1]||'';
+    });
+    saveDB();
+    toast('Đã tải dữ liệu từ Google Sheets về');
+  }catch(e){ console.error(e); alert('Lỗi khi tải dữ liệu từ Google Sheets: '+e.message); }
+  driveState.busy=false; nav('dashboard');
+}
+
+/* ========================= XUẤT CSV ========================= */
+function exportCSV(filename, rows){
+  const csv = rows.map(r=> r.map(v=> '"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+/* ========================= KHỞI ĐỘNG ========================= */
+function init(){
+  db = loadDB() || seedDB();
+  if(!db.settings) db.settings = {diemKhoiDiem:100, quyTacDacBiet:'', driveClientId:''};
+  if(db.settings.driveClientId===undefined) db.settings.driveClientId = '';
+  saveDB();
+  buildMenu();
+  document.getElementById('topbar-date').textContent = 'Hôm nay: ' + formatVN(toISO(today));
+  nav('dashboard');
+}
+init();
+</script>
+</body>
+</html>
